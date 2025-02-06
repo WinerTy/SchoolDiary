@@ -17,6 +17,9 @@ class ApiSettings(BaseModel):
 
 class AuthSettings(BaseModel):
     secret: str = secrets.token_hex()
+    life_time: int = 3600
+    reset_password_token_secret: str
+    verification_token_secret: str
 
 
 class ServerSettings(BaseModel):
@@ -43,7 +46,7 @@ class DataBaseSettings(BaseModel):
 
 class AppSettings(BaseSettings):
     api: ApiSettings = ApiSettings()
-    auth: AuthSettings = AuthSettings()
+    auth: AuthSettings
     server: ServerSettings = ServerSettings()
     db: DataBaseSettings
 

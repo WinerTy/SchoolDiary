@@ -1,6 +1,9 @@
+from api import router
 from core.app.create_app import create_application
 
 app = create_application()
+
+app.include_router(router)
 
 
 @app.get("/")
