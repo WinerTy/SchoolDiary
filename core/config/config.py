@@ -7,6 +7,14 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 load_dotenv()
 
 
+class ApiAuth(BaseModel):
+    token_url: str = "/auth/token"
+
+
+class ApiSettings(BaseModel):
+    auth: ApiAuth = ApiAuth()
+
+
 class AuthSettings(BaseModel):
     secret: str = secrets.token_hex()
 
@@ -34,6 +42,7 @@ class DataBaseSettings(BaseModel):
 
 
 class AppSettings(BaseSettings):
+    api: ApiSettings = ApiSettings()
     auth: AuthSettings = AuthSettings()
     server: ServerSettings = ServerSettings()
     db: DataBaseSettings
