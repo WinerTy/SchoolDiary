@@ -25,7 +25,7 @@ class AuthSettings(BaseModel):
 class ServerSettings(BaseModel):
     host: str = "127.0.0.1"
     port: int = 8000
-    debug: bool = False
+    debug: bool = True
 
 
 class DataBaseSettings(BaseModel):
