@@ -5,13 +5,13 @@ from fastapi import APIRouter, Depends
 from api.dependencies.services.application_service import get_application_service
 from api.v1.auth.fastapi_users import current_active_user
 from core.database import User
+from core.database.models.choices import ChoicesApplicationStatus
 from core.database.schemas.application import CreateApplication, ReadApplication
 from core.services.application_service import ApplicationService
 
 router = APIRouter(
     prefix="/application",
     tags=["Application"],
-    dependencies=[Depends(current_active_user)],
 )
 
 
@@ -22,3 +22,11 @@ async def create_application(
     service: Annotated["ApplicationService", Depends(get_application_service)],
 ):
     return await service.create(create_data, user_id=user.id)
+
+
+@router.get("/test/{status}")
+async def test_event(
+    status: ChoicesApplicationStatus,
+    service: Annotated["ApplicationService", Depends(get_application_service)],
+):
+    return await service.repository.get_one_by_status(status)

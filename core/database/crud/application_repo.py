@@ -1,4 +1,8 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
+
+from sqlalchemy import select
+
+from ..models.choices import ChoicesApplicationStatus
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
@@ -13,3 +17,15 @@ class ApplicationRepository(
 ):
     def __init__(self, db: "AsyncSession"):
         super().__init__(Applications, db)
+
+    async def get_one_by_status(
+        self, status: ChoicesApplicationStatus
+    ) -> Optional[Applications]:
+        result = await self.db.execute(
+            select(self.model).where(self.model.status == status)
+        )
+        record = result.scalars().first()
+        record.status = ChoicesApplicationStatus.approved
+        self.db.add(record)
+        await self.db.commit()
+        return record

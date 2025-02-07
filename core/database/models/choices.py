@@ -1,14 +1,15 @@
 from enum import Enum
 
 
-class ChoicesRole(Enum):
+class ChoicesRole(str, Enum):
     platform_admin = "platform_admin"
     school_admin = "school_admin"
+    class_teacher = "class_teacher"
     teacher = "teacher"
     student = "student"
 
 
-class ChoicesApplicationStatus(Enum):
+class ChoicesApplicationStatus(str, Enum):
     pending = "pending"
     approved = "approved"
     rejected = "rejected"
