@@ -1,15 +1,9 @@
-from typing import TypeVar, Generic, Type, Optional, Any
+from typing import Generic, Type, Optional, Any
 
-from pydantic import BaseModel
 from sqlalchemy import select, inspect
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.database import BaseModel as SqlBase
-
-Model = TypeVar("Model", bound=SqlBase)
-CreateSchema = TypeVar("CreateSchema", bound=BaseModel)
-ReadSchema = TypeVar("ReadSchema", bound=BaseModel)
-ResponseSchema = TypeVar("ResponseSchema", bound=BaseModel)
+from core.types import Model, CreateSchema, ReadSchema, ResponseSchema
 
 
 class BaseRepository(Generic[Model, CreateSchema, ReadSchema, ResponseSchema]):
@@ -36,11 +30,15 @@ class BaseRepository(Generic[Model, CreateSchema, ReadSchema, ResponseSchema]):
         result = await self.db.execute(select(self.model).offset(skip).limit(limit))
         return result.scalars().all()
 
-    async def create(self, item: CreateSchema) -> Model:
+    async def create(self, item: CreateSchema, **kwargs) -> Model:
         try:
-            db_item = self.model(**item.model_dump())
+            data = item.model_dump()
+            data.update(kwargs)
+
+            db_item = self.model(**data)
             self.db.add(db_item)
             await self.db.commit()
+            await self.db.refresh(db_item)
             return db_item
         except Exception as e:
             await self.db.rollback()
