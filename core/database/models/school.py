@@ -1,3 +1,5 @@
+from typing import List
+
 from sqlalchemy import ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -16,3 +18,7 @@ class School(BaseModel, PkIntMixin):
     school_phone: Mapped[str] = mapped_column(String(21), nullable=False)
 
     director: Mapped["User"] = relationship("User", foreign_keys=[director_id])
+
+    teachers: Mapped[List["User"]] = relationship(
+        "User", back_populates="school", foreign_keys="[User.school_id]"
+    )

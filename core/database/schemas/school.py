@@ -1,4 +1,8 @@
+from typing import List
+
 from pydantic import BaseModel
+
+from core.database.schemas.user import UserRead
 
 
 class BaseSchool(BaseModel):
@@ -15,3 +19,5 @@ class CreateSchool(BaseSchool):
 class ReadSchool(BaseSchool):
     id: int
     director_id: int
+
+    teachers: List[UserRead] = []
