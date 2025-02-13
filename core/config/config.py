@@ -1,10 +1,14 @@
 import secrets
 
 from dotenv import load_dotenv
-from pydantic import BaseModel, PostgresDsn
+from pydantic import BaseModel, PostgresDsn, RedisDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 load_dotenv()
+
+
+class RedisSettings(BaseModel):
+    url: RedisDsn
 
 
 class ApiAuth(BaseModel):
@@ -49,7 +53,7 @@ class AppSettings(BaseSettings):
     auth: AuthSettings
     server: ServerSettings = ServerSettings()
     db: DataBaseSettings
-
+    redis: RedisSettings
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
