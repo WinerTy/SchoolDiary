@@ -26,12 +26,19 @@ class User(BaseModel, PkIntMixin, SQLAlchemyBaseUserTable[int]):
         default=ChoicesRole.student,
         server_default=ChoicesRole.student.value,
     )
+
     school_id: Mapped[int] = mapped_column(
         ForeignKey("school.id", ondelete="CASCADE"), nullable=True
     )
-
     school: Mapped["School"] = relationship(
         "School", back_populates="teachers", foreign_keys=[school_id]
+    )
+
+    classroom_id: Mapped[int] = mapped_column(
+        ForeignKey("classrooms.id", ondelete="CASCADE"), nullable=True
+    )
+    classroom: Mapped["Classroom"] = relationship(
+        "Classroom", back_populates="students", foreign_keys=[classroom_id]
     )
 
     @property

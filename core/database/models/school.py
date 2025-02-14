@@ -23,6 +23,9 @@ class School(BaseModel, PkIntMixin):
     teachers: Mapped[List["User"]] = relationship(
         "User", back_populates="school", foreign_keys="[User.school_id]"
     )
+    classrooms: Mapped[List["Classroom"]] = relationship(
+        "Classroom", back_populates="school", foreign_keys="[Classroom.school_id]"
+    )
 
     def __str__(self):
         return self.school_name

@@ -3,7 +3,8 @@ from typing import Any
 from sqladmin import ModelView
 from starlette.requests import Request
 
-from core.database import User, School
+from core.database import User, School, Classroom
+from core.database.models.choices import ChoicesRole
 
 
 class UserAdmin(ModelView, model=User):
@@ -62,3 +63,47 @@ class SchoolAdmin(ModelView, model=School):
         self, data: dict, model: Any, is_created: bool, request: Request
     ) -> None:
         print("on_model_change", data)
+
+
+class ClassroomAdmin(ModelView, model=Classroom):
+    column_list = [
+        Classroom.id,
+        Classroom.class_name,
+        Classroom.class_teacher,
+        Classroom.students,
+    ]
+
+    form_columns = [
+        Classroom.class_name,
+        "school",
+        "class_teacher",
+        "students",
+    ]
+
+    form_ajax_refs = {
+        "school": {
+            "fields": ("school_name",),
+            "order_by": "school_name",
+            "formatter": lambda model: (model.school_name if model else None),
+        },
+        "class_teacher": {
+            "fields": ("first_name", "last_name"),
+            "order_by": "first_name",
+            "formatter": lambda model: (model.full_name if model else None),
+            "filters": {
+                "role": ChoicesRole.teacher.value,
+                "school_id": lambda model: print(model)
+                or (model.school_id if model else None),
+            },
+        },
+        "students": {
+            "fields": ("first_name", "last_name"),
+            "order_by": "first_name",
+            "multiple": True,
+            "formatter": lambda model: (model.full_name if model else None),
+            "filters": {
+                "role": ChoicesRole.student.value,
+                "school_id": lambda model: model.school_id if model else None,
+            },
+        },
+    }
