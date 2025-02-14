@@ -1,5 +1,6 @@
-from typing import Generic, Type, Optional, Any
+from typing import Generic, Type, Any, Optional
 
+from fastapi.exceptions import HTTPException
 from sqlalchemy import select, inspect
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -20,11 +21,15 @@ class BaseRepository(Generic[Model, CreateSchema, ReadSchema, ResponseSchema]):
                 f"Field '{pk_field}' is not a primary key in model {model.__name__}"
             )
 
-    async def get_by_id(self, item_id: Any) -> Optional[Model]:
-        result = await self.db.execute(
-            select(self.model).where(getattr(self.model, self.pk_field) == item_id)
-        )
-        return result.scalars().one_or_none()
+    async def get_by_id(
+        self, item_id: Any, error_message: Optional[str] = "Item not found"
+    ) -> Model:
+        stmt = select(self.model).where(getattr(self.model, self.pk_field) == item_id)
+        result = await self.db.execute(stmt)
+        instance = result.scalars().first()
+        if not instance:
+            raise HTTPException(status_code=404, detail=error_message)
+        return instance
 
     async def get_all(self, skip: int = 0, limit: int = 100) -> list[Model]:
         result = await self.db.execute(select(self.model).offset(skip).limit(limit))

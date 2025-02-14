@@ -1,7 +1,6 @@
 from typing import TYPE_CHECKING
 
 from fastapi import HTTPException
-from sqlalchemy import select
 
 from core.database import School
 from core.database.crud.base_repo import BaseRepository
@@ -16,13 +15,19 @@ class SchoolRepository(BaseRepository[School, CreateSchool, ReadSchool, ReadScho
         super().__init__(School, db)
 
     async def get_school_teachers(self, school_id: int) -> ReadSchool:
-        stmt = select(School).where(School.id == school_id)
-        result = await self.db.execute(stmt)
-        school = result.scalars().first()
+        school = await self.get_by_id(school_id)
+
         if school:
             await self.db.refresh(school, attribute_names=["teachers"])
             return school
-        return HTTPException(status_code=404, detail="School not found")
+
+    async def create_school(self, data: CreateSchool, director_id: int):
+        school = await self.get_by_id(director_id)
+        if school:
+            raise HTTPException(status_code=400, detail="School already exists")
+
+        created_school = self.create(data, director_id=director_id)
+        return created_school
 
     async def add_teacher_to_school(self, school_id: int):
         pass

@@ -14,6 +14,7 @@ class CreateSchool(BaseSchool):
     school_description: str
     school_type: str
     school_phone: str
+    school_name: str
 
 
 class ReadSchool(BaseSchool):

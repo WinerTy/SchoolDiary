@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 
 from fastapi_users_db_sqlalchemy import SQLAlchemyBaseUserTable, SQLAlchemyUserDatabase
-from sqlalchemy import Enum, ForeignKey
+from sqlalchemy import Enum, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from core.database.mixins.id_mixin import PkIntMixin
@@ -15,6 +15,10 @@ if TYPE_CHECKING:
 
 class User(BaseModel, PkIntMixin, SQLAlchemyBaseUserTable[int]):
     __tablename__ = "users"
+
+    first_name: Mapped[str] = mapped_column(String(128), nullable=False)
+    middle_name: Mapped[str] = mapped_column(String(128), nullable=True)
+    last_name: Mapped[str] = mapped_column(String(128), nullable=False)
 
     role: Mapped[str] = mapped_column(
         Enum(ChoicesRole),
@@ -30,9 +34,13 @@ class User(BaseModel, PkIntMixin, SQLAlchemyBaseUserTable[int]):
         "School", back_populates="teachers", foreign_keys=[school_id]
     )
 
+    @property
+    def full_name(self):
+        return f"{self.first_name} {self.last_name}"
+
     @classmethod
     def get_db(cls, session: "AsyncSession"):
         return SQLAlchemyUserDatabase(session, cls)
 
     def __str__(self):
-        return self.email
+        return self.full_name
