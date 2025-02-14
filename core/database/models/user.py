@@ -26,7 +26,6 @@ class User(BaseModel, PkIntMixin, SQLAlchemyBaseUserTable[int]):
         ForeignKey("school.id", ondelete="CASCADE"), nullable=True
     )
 
-    # Указываем явно, что связь с School осуществляется через school_id
     school: Mapped["School"] = relationship(
         "School", back_populates="teachers", foreign_keys=[school_id]
     )
@@ -34,3 +33,6 @@ class User(BaseModel, PkIntMixin, SQLAlchemyBaseUserTable[int]):
     @classmethod
     def get_db(cls, session: "AsyncSession"):
         return SQLAlchemyUserDatabase(session, cls)
+
+    def __str__(self):
+        return self.email

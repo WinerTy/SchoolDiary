@@ -12,6 +12,7 @@ class School(BaseModel, PkIntMixin):
         ForeignKey("users.id", ondelete="cascade"), nullable=False
     )
 
+    school_name: Mapped[str] = mapped_column(String(128), nullable=False)
     school_address: Mapped[str] = mapped_column(String(128), nullable=False)
     school_description: Mapped[str] = mapped_column(Text, nullable=False)
     school_type: Mapped[str] = mapped_column(String(128), nullable=True)
@@ -22,3 +23,6 @@ class School(BaseModel, PkIntMixin):
     teachers: Mapped[List["User"]] = relationship(
         "User", back_populates="school", foreign_keys="[User.school_id]"
     )
+
+    def __str__(self):
+        return self.school_name

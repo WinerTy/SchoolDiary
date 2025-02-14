@@ -4,6 +4,7 @@ from core.config import config
 
 app = create_application()
 
+
 app.include_router(router)
 
 
