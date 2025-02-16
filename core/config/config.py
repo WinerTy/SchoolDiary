@@ -1,10 +1,23 @@
 import secrets
 
 from dotenv import load_dotenv
-from pydantic import BaseModel, PostgresDsn, RedisDsn
+from pydantic import BaseModel, PostgresDsn, RedisDsn, EmailStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 load_dotenv()
+
+
+class SmtpSettings(BaseModel):
+    mail_username: str
+    mail_password: str
+    mail_from: EmailStr
+    mail_port: int = 465
+    mail_server: str = "smtp.yandex.ru"
+    mail_from_name: str = "School Management System"
+    mail_starttls: bool = True
+    mail_ssl_tls: bool = True
+    use_credentials: bool = True
+    validate_certs: bool = True
 
 
 class RedisSettings(BaseModel):
@@ -49,6 +62,7 @@ class DataBaseSettings(BaseModel):
 
 
 class AppSettings(BaseSettings):
+    smtp: SmtpSettings
     api: ApiSettings = ApiSettings()
     auth: AuthSettings
     server: ServerSettings = ServerSettings()

@@ -1,6 +1,7 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
+from fastapi.responses import Response
 
 from api.dependencies.services.application_service import get_application_service
 from api.v1.auth.fastapi_users import current_active_user
@@ -8,6 +9,7 @@ from core.database import User
 from core.database.models.choices import ChoicesApplicationStatus
 from core.database.schemas.application import CreateApplication, ReadApplication
 from core.services.application_service import ApplicationService
+from utils.smtp.email import send_test_email, EmailSchema
 
 router = APIRouter(
     prefix="/application",
@@ -30,3 +32,9 @@ async def test_event(
     service: Annotated["ApplicationService", Depends(get_application_service)],
 ):
     return await service.repository.get_one_by_status(status)
+
+
+@router.post("/smtp/")
+async def send_email(email: EmailSchema):
+    await send_test_email(email)
+    return Response("OK")

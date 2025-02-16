@@ -3,8 +3,19 @@ from typing import Any
 from sqladmin import ModelView
 from starlette.requests import Request
 
-from core.database import User, School, Classroom
+from core.database import User, School, Classroom, Invitation
 from core.database.models.choices import ChoicesRole
+
+
+class InvitationAdmin(ModelView, model=Invitation):
+    column_list = [
+        Invitation.user_id,
+        Invitation.token,
+        Invitation.expires_at,
+        Invitation.status,
+    ]
+
+    name_plural = "Приглашения"
 
 
 class UserAdmin(ModelView, model=User):

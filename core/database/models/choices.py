@@ -13,3 +13,9 @@ class ChoicesApplicationStatus(str, Enum):
     pending = "pending"
     approved = "approved"
     rejected = "rejected"
+
+
+class ChoicesInviteStatus(str, Enum):
+    pending = "pending"
+    accepted = "accepted"
+    canceled = "canceled"

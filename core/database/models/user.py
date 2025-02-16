@@ -7,7 +7,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from core.database.mixins.id_mixin import PkIntMixin
 from core.database.models.choices import ChoicesRole
 from .base import BaseModel
-from .. import School
+from .school import School
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
