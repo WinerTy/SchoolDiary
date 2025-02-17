@@ -1,6 +1,7 @@
 from typing import Generic, Type, Any, Optional
 
 from fastapi.exceptions import HTTPException
+from pydantic import BaseModel
 from sqlalchemy import select, inspect
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -48,3 +49,35 @@ class BaseRepository(Generic[Model, CreateSchema, ReadSchema, ResponseSchema]):
         except Exception as e:
             await self.db.rollback()
             raise e
+
+    async def update(
+        self,
+        item_id: Any,
+        update_data: BaseModel,  # Только Pydantic схема
+    ) -> Model:
+        """
+        Обновляет объект в базе данных.
+        :param item_id: Идентификатор объекта.
+        :param update_data: Данные для обновления (только Pydantic схема).
+        :return: Обновленный объект.
+        """
+        try:
+            # Получаем объект из базы данных
+            instance = await self.get_by_id(item_id)
+
+            # Преобразуем Pydantic схему в словарь, исключая неустановленные поля
+            update_dict = update_data.model_dump(exclude_unset=True)
+
+            # Обновляем поля объекта
+            for key, value in update_dict.items():
+                setattr(instance, key, value)
+
+            # Сохраняем изменения в базе данных
+            self.db.add(instance)
+            await self.db.commit()
+            await self.db.refresh(instance)
+
+            return instance
+        except Exception as e:
+            await self.db.rollback()
+            raise HTTPException(status_code=400, detail=str(e))

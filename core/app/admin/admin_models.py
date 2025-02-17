@@ -11,6 +11,7 @@ class InvitationAdmin(ModelView, model=Invitation):
     column_list = [
         Invitation.user_id,
         Invitation.token,
+        Invitation.created_at,
         Invitation.expires_at,
         Invitation.status,
     ]

@@ -1,5 +1,7 @@
 from fastapi_users import schemas
 
+from core.database.models.choices import ChoicesRole
+
 
 class UserRead(schemas.BaseUser[int]):
     id: int
@@ -16,4 +18,4 @@ class UserCreate(schemas.BaseUserCreate):
 
 
 class UserUpdate(schemas.BaseUserUpdate):
-    pass
+    role: ChoicesRole
