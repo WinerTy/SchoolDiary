@@ -11,6 +11,7 @@ from core.database import (
     Teacher,
     Subject,
     Schedule,
+    Lesson,
 )
 from core.database.models.choices import ChoicesRole
 
@@ -21,6 +22,32 @@ class ScheduleAdmin(ModelView, model=Schedule):
         Schedule.classroom,
         Schedule.day_of_week,
     ]
+
+
+class LessonAdmin(ModelView, model=Lesson):
+    column_list = [
+        Lesson.id,
+        Lesson.subject,
+        Lesson.teacher,
+        Lesson.start_time,
+        Lesson.end_time,
+        Lesson.additional_info,
+    ]
+
+    form_columns = [
+        "subject",
+        "teacher",
+        "schedule",
+        Lesson.start_time,
+        Lesson.end_time,
+        Lesson.additional_info,
+    ]
+
+    form_ajax_refs = {
+        "subject": {"fields": ["subject_name"]},
+        "teacher": {"fields": ["first_name", "last_name"]},
+        "schedule": {"fields": ["day_of_week"]},
+    }
 
 
 class SubjectAdmin(ModelView, model=Subject):

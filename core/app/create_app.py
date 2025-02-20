@@ -2,6 +2,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
+from fastapi_pagination import add_pagination
 
 from api import router
 from core.app.admin.admin_app import create_admin_app
@@ -24,9 +25,6 @@ def create_application() -> FastAPI:
     )
 
     app.include_router(router)
-
-    @app.get("/")
-    async def root():
-        return {"message": "Hello World"}
+    add_pagination(app)
 
     return app

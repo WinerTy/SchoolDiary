@@ -27,11 +27,13 @@ class Lesson(BaseModel, PkIntMixin):
     end_time: Mapped[Time] = mapped_column(Time, nullable=False)
     additional_info: Mapped[str] = mapped_column(Text, nullable=True)
 
-    subject: Mapped["Subject"] = relationship("Subject", back_populates="lessons")
+    subject: Mapped["Subject"] = relationship(
+        "Subject", back_populates="lessons", lazy="joined"
+    )
     teacher: Mapped["User"] = relationship(
         "User", back_populates="lessons", foreign_keys=[teacher_id]
     )
     schedule: Mapped["Schedule"] = relationship("Schedule", back_populates="lessons")
 
     def __str__(self):
-        return self.id
+        return self.subject.subject_name

@@ -9,6 +9,7 @@ from .choices import ChoicesInviteStatus
 
 
 class Invitation(BaseModel, PkIntMixin, TimestampMixin):
+    invited_by: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="cascade"))
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="cascade"))
     token: Mapped[str] = mapped_column(String(36), unique=True, index=True)
     expires_at: Mapped[datetime] = mapped_column(

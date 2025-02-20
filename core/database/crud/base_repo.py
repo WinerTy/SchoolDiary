@@ -3,6 +3,7 @@ from typing import Generic, Type, Any, Optional
 from fastapi.exceptions import HTTPException
 from pydantic import BaseModel
 from sqlalchemy import select, inspect
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.types import Model, CreateSchema, ReadSchema, ResponseSchema
@@ -32,8 +33,8 @@ class BaseRepository(Generic[Model, CreateSchema, ReadSchema, ResponseSchema]):
             raise HTTPException(status_code=404, detail=error_message)
         return instance
 
-    async def get_all(self, skip: int = 0, limit: int = 100) -> list[Model]:
-        result = await self.db.execute(select(self.model).offset(skip).limit(limit))
+    async def get_all(self) -> list[Model]:
+        result = await self.db.execute(select(self.model))
         return result.scalars().all()
 
     async def create(self, item: CreateSchema, **kwargs) -> Model:
@@ -46,9 +47,12 @@ class BaseRepository(Generic[Model, CreateSchema, ReadSchema, ResponseSchema]):
             await self.db.commit()
             await self.db.refresh(db_item)
             return db_item
+        except IntegrityError:
+            await self.db.rollback()
+            raise HTTPException(status_code=400, detail="Item already exists")
         except Exception as e:
             await self.db.rollback()
-            raise e
+            raise HTTPException(status_code=500, detail=str(e))
 
     async def update(
         self,

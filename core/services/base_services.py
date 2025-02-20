@@ -8,12 +8,10 @@ from core.types import Model, CreateSchema, ReadSchema, ResponseSchema
 class BaseService(Generic[Model, CreateSchema, ReadSchema, ResponseSchema], ABC):
     def __init__(
         self,
-        repository: BaseRepository[Model, CreateSchema, ReadSchema, ResponseSchema],
         repositories: Dict[
             str, BaseRepository[Model, CreateSchema, ReadSchema, ResponseSchema]
         ] = {},
     ):
-        self.repository = repository
         self.repositories = repositories
 
     def get_repo(

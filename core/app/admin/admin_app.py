@@ -11,6 +11,7 @@ from .admin_models import (
     TeacherAdmin,
     SubjectAdmin,
     ScheduleAdmin,
+    LessonAdmin,
 )
 
 if TYPE_CHECKING:
@@ -27,3 +28,4 @@ def create_admin_app(app: "FastAPI", authentication_backend) -> None:
     admin.add_view(TeacherAdmin)
     admin.add_view(SubjectAdmin)
     admin.add_view(ScheduleAdmin)
+    admin.add_view(LessonAdmin)

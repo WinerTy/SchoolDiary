@@ -6,9 +6,12 @@ from api.dependencies.repository import (
     get_application_repository,
     get_user_repository,
     get_invitation_repository,
+    get_school_repository,
+    get_subject_repository,
 )
 from core.services.application_service import ApplicationService
 from core.services.invitation_service import InvitationService
+from core.services.school_service import SchoolService
 
 if TYPE_CHECKING:
     from core.database.crud.application_repo import ApplicationRepository
@@ -29,3 +32,10 @@ async def get_invitation_service(
     user_repo: Annotated["UserRepository", Depends(get_user_repository)],
 ):
     yield InvitationService(invitation_repo, user_repo)
+
+
+async def get_school_service(
+    school_repo: Annotated["SchoolRepository", Depends(get_school_repository)],
+    subject_repo: Annotated["SubjectRepository", Depends(get_subject_repository)],
+):
+    yield SchoolService(school_repo, subject_repo)

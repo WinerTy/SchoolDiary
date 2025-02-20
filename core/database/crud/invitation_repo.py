@@ -28,9 +28,13 @@ class InvitationRepository(
             raise HTTPException(status_code=404, detail="Invitation not found")
         return instance
 
-    async def create_invite_via_token(self, user_id) -> Invitation:
+    async def create_invite_via_token(
+        self, user_id: int, invited_by: int
+    ) -> Invitation:
         token = str(uuid.uuid4())
-        instance = await self.create(CreateInvite(user_id=user_id, token=token))
+        instance = await self.create(
+            CreateInvite(user_id=user_id, token=token, invited_by=invited_by)
+        )
         return instance
 
     async def verification_token(self, token: str) -> bool:

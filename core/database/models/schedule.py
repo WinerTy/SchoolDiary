@@ -9,6 +9,7 @@ from core.database.models.choices import ChoicesDayOfWeek
 
 if TYPE_CHECKING:
     from .classroom import Classroom
+    from .lesson import Lesson
 
 
 class Schedule(BaseModel, PkIntMixin):
@@ -26,3 +27,6 @@ class Schedule(BaseModel, PkIntMixin):
     classroom: Mapped["Classroom"] = relationship(
         "Classroom", back_populates="schedules"
     )
+
+    def __str__(self) -> str:
+        return f"{self.classroom} {self.day_of_week}"

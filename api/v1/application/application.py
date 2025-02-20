@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 from fastapi.responses import Response
 
-from api.dependencies.services.application_service import get_application_service
+from api.dependencies.services.get_service import get_application_service
 from api.v1.auth.fastapi_users import current_active_user
 from core.database import User
 from core.database.models.choices import ChoicesApplicationStatus

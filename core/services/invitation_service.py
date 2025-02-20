@@ -18,7 +18,6 @@ class InvitationService(BaseService[Invitation, CreateInvite, ReadInvite, ReadIn
         user_repository: UserRepository,
     ):
         super().__init__(
-            repository=invitation_repository,
             repositories={"invitation": invitation_repository, "user": user_repository},
         )
 
@@ -33,9 +32,9 @@ class InvitationService(BaseService[Invitation, CreateInvite, ReadInvite, ReadIn
         repo = self.get_repo("invitation")
         return await repo.get_by_token(token)
 
-    async def create_invite(self, user_id: int) -> Invitation:
+    async def create_invite(self, user_id: int, invited_by: int) -> Invitation:
         repo = self.get_repo("invitation")
-        return await repo.create_invite_via_token(user_id)
+        return await repo.create_invite_via_token(user_id, invited_by)
 
     async def get_user_by_id(self, user_id: int, repo_name: str = "user"):
         result = await self.get_by_id(user_id, repo_name)

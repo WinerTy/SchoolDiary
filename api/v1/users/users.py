@@ -1,14 +1,15 @@
 from typing import TYPE_CHECKING, Annotated
 
 from fastapi import APIRouter, Depends
-from fastapi.responses import Response
 
-from api.dependencies.services.application_service import get_invitation_service
+from api.dependencies.services.get_service import get_invitation_service
 from api.v1.auth.fastapi_users import current_active_teacher_user_or_admin_user
+from core.database.schemas import SuccessResponse
 from core.database.schemas.invite import CreateInvite
 
 if TYPE_CHECKING:
     from core.services.invitation_service import InvitationService
+    from core.database import User
 
 router = APIRouter(
     prefix="/users",
@@ -17,13 +18,17 @@ router = APIRouter(
 )
 
 
-@router.post("/invite/")
+@router.post("/invite/", response_model=SuccessResponse)
 async def invite_user_for_group(
     invite_data: CreateInvite,
+    user: Annotated["User", Depends(current_active_teacher_user_or_admin_user)],
     service: Annotated["InvitationService", Depends(get_invitation_service)],
 ):
-    await service.create_invite(user_id=invite_data.user_id)
-    return Response(status_code=200, content="OK")
+    await service.create_invite(user_id=invite_data.user_id, invited_by=user.id)
+    return SuccessResponse(
+        detail="Приглашение отправлено на электронную почту пользователя, срок действия приглашения 3 дня",
+        status=200,
+    )
 
 
 @router.get("/invite/accept/{token}")

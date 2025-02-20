@@ -14,6 +14,7 @@ class Subject(BaseModel, PkIntMixin):
     __tablename__ = "subjects"
 
     subject_name: Mapped[str] = mapped_column(String(128), nullable=False, unique=True)
+    description: Mapped[str] = mapped_column(String(256), nullable=True)
     lessons: Mapped[List["Lesson"]] = relationship("Lesson", back_populates="subject")
 
     def __str__(self):

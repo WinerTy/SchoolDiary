@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import BaseModel
 
 from core.database.models.choices import ChoicesInviteStatus
@@ -17,4 +19,5 @@ class UpdateInvite(BaseModel):
 
 
 class CreateInvite(BaseInvite):
-    token: str = None
+    token: Optional[str] = None
+    invited_by: Optional[int] = None
