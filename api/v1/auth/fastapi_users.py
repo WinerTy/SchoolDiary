@@ -26,3 +26,14 @@ async def current_active_student_user(
             detail="The user doesn't have the required role",
         )
     return user
+
+
+async def current_active_teacher_user_or_admin_user(
+    user: User = Depends(current_active_user),
+) -> User:
+    if user.role != ChoicesRole.teacher and user.role != ChoicesRole.platform_admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="The user doesn't have the required role",
+        )
+    return user

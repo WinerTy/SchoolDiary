@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
 from fastapi_users_db_sqlalchemy import SQLAlchemyBaseUserTable, SQLAlchemyUserDatabase
 from sqlalchemy import Enum, ForeignKey, String
@@ -7,10 +7,13 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from core.database.mixins.id_mixin import PkIntMixin
 from core.database.models.choices import ChoicesRole
 from .base import BaseModel
-from .school import School
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
+    from .teacher import Teacher
+    from .school import School
+    from .classroom import Classroom
+    from .lesson import Lesson
 
 
 class User(BaseModel, PkIntMixin, SQLAlchemyBaseUserTable[int]):
@@ -23,8 +26,8 @@ class User(BaseModel, PkIntMixin, SQLAlchemyBaseUserTable[int]):
     role: Mapped[str] = mapped_column(
         Enum(ChoicesRole),
         nullable=False,
-        default=ChoicesRole.student,
-        server_default=ChoicesRole.student.value,
+        default=ChoicesRole.user,
+        server_default=ChoicesRole.user.value,
     )
 
     school_id: Mapped[int] = mapped_column(
@@ -40,6 +43,10 @@ class User(BaseModel, PkIntMixin, SQLAlchemyBaseUserTable[int]):
     classroom: Mapped["Classroom"] = relationship(
         "Classroom", back_populates="students", foreign_keys=[classroom_id]
     )
+    teacher_info: Mapped["Teacher"] = relationship(
+        "Teacher", back_populates="user", uselist=False
+    )
+    lessons: Mapped[List["Lesson"]] = relationship("Lesson", back_populates="teacher")
 
     @property
     def full_name(self):

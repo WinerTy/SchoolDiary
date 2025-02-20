@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends
 from fastapi.responses import Response
 
 from api.dependencies.services.application_service import get_invitation_service
+from api.v1.auth.fastapi_users import current_active_teacher_user_or_admin_user
 from core.database.schemas.invite import CreateInvite
 
 if TYPE_CHECKING:
@@ -12,6 +13,7 @@ if TYPE_CHECKING:
 router = APIRouter(
     prefix="/users",
     tags=["Users"],
+    dependencies=[Depends(current_active_teacher_user_or_admin_user)],
 )
 
 
@@ -29,7 +31,5 @@ async def accept_invite(
     token: str,
     service: Annotated["InvitationService", Depends(get_invitation_service)],
 ):
-    repo = service.get_repo()
-    result = await repo.change_invite_status(token=token)
-    print(result)
+    result = await service.accept_invite(token=token)
     return result

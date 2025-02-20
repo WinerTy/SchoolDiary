@@ -27,11 +27,11 @@ conf = ConnectionConfig(
 
 
 def send_email_via_html(email: EmailSchema, template_name: str):
-    pass
+    message = MessageSchema()
 
 
 async def send_test_email(email: EmailSchema):
-    send_email_via_html(email, "email.html")
+    # send_email_via_html(email, "email.html")
     html = """<p>Hi this test mail, thanks for using Fastapi-mail</p> """
 
     message = MessageSchema(

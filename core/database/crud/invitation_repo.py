@@ -30,9 +30,7 @@ class InvitationRepository(
 
     async def create_invite_via_token(self, user_id) -> Invitation:
         token = str(uuid.uuid4())
-        instance = await self.create(
-            CreateInvite(user_id=user_id, token=token), "invitation"
-        )
+        instance = await self.create(CreateInvite(user_id=user_id, token=token))
         return instance
 
     async def verification_token(self, token: str) -> bool:

@@ -3,12 +3,44 @@ from typing import Any
 from sqladmin import ModelView
 from starlette.requests import Request
 
-from core.database import User, School, Classroom, Invitation
+from core.database import (
+    User,
+    School,
+    Classroom,
+    Invitation,
+    Teacher,
+    Subject,
+    Schedule,
+)
 from core.database.models.choices import ChoicesRole
+
+
+class ScheduleAdmin(ModelView, model=Schedule):
+    column_list = [
+        Schedule.id,
+        Schedule.classroom,
+        Schedule.day_of_week,
+    ]
+
+
+class SubjectAdmin(ModelView, model=Subject):
+    column_list = [
+        Subject.id,
+        Subject.subject_name,
+    ]
+
+
+class TeacherAdmin(ModelView, model=Teacher):
+    column_list = [
+        Teacher.id,
+        "user",
+        Teacher.subject,
+    ]
 
 
 class InvitationAdmin(ModelView, model=Invitation):
     column_list = [
+        Invitation.id,
         Invitation.user_id,
         Invitation.token,
         Invitation.created_at,
@@ -20,7 +52,14 @@ class InvitationAdmin(ModelView, model=Invitation):
 
 
 class UserAdmin(ModelView, model=User):
-    column_list = [User.id, User.role, User.school_id, User.school, "full_name"]
+    column_list = [
+        User.id,
+        User.role,
+        User.school_id,
+        User.school,
+        "full_name",
+        "teacher_info.subject",
+    ]
     form_columns = [
         User.role,
         User.school_id,

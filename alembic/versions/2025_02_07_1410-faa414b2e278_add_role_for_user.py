@@ -25,7 +25,12 @@ def upgrade() -> None:
     op.drop_index("ix_friendship_user_id", table_name="friendship")
     op.drop_table("friendship")
     choices_role_enum = postgresql.ENUM(
-        "platform_admin", "school_admin", "teacher", "student", name="choicesrole"
+        "platform_admin",
+        "school_admin",
+        "teacher",
+        "student",
+        "user",
+        name="choicesrole",
     )
     choices_role_enum.create(op.get_bind(), checkfirst=True)
 
@@ -39,6 +44,7 @@ def upgrade() -> None:
                 "school_admin",
                 "teacher",
                 "student",
+                "user",
                 name="choicesrole",
             ),
             server_default="student",

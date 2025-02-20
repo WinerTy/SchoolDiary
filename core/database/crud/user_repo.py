@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING
 
+from fastapi import HTTPException
 from sqlalchemy import select
 
 from core.database import User
@@ -20,10 +21,14 @@ class UserRepository(BaseRepository[User, UserCreate, UserRead, UserRead]):
         result = await self.db.execute(stmt)
         return result.scalars().first()
 
-    async def change_user_role(self, user_id: int, role: ChoicesRole) -> User | None:
-        user = await self.get_by_id(user_id)
-        user.role = role
-        self.db.add(user)
-        await self.db.commit()
-        await self.db.refresh(user)
-        return user
+    async def change_user_role(self, user_id: int, role: ChoicesRole) -> User:
+        try:
+            user = await self.get_by_id(user_id)
+            user.role = role
+            self.db.add(user)
+            await self.db.commit()
+            await self.db.refresh(user)
+            return user
+        except Exception as e:
+            await self.db.rollback()
+            raise HTTPException(status_code=400, detail=str(e))

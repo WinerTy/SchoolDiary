@@ -7,6 +7,7 @@ class ChoicesRole(str, Enum):
     class_teacher = "class_teacher"
     teacher = "teacher"
     student = "student"
+    user = "user"
 
 
 class ChoicesApplicationStatus(str, Enum):
@@ -19,3 +20,13 @@ class ChoicesInviteStatus(str, Enum):
     pending = "pending"
     accepted = "accepted"
     canceled = "canceled"
+
+
+class ChoicesDayOfWeek(str, Enum):
+    monday = "monday"
+    tuesday = "tuesday"
+    wednesday = "wednesday"
+    thursday = "thursday"
+    friday = "friday"
+    saturday = "saturday"
+    sunday = "sunday"
