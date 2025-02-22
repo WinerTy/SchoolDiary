@@ -9,5 +9,12 @@ class SchoolService(BaseService[School, CreateSchool, ReadSchool, ReadSchool]):
         self,
         school_repo: BaseRepository,
         subject_repo: BaseRepository,
+        lesson_repo: BaseRepository,
     ):
-        super().__init__(repositories={"school": school_repo, "subject": subject_repo})
+        super().__init__(
+            repositories={
+                "school": school_repo,
+                "subject": subject_repo,
+                "lesson": lesson_repo,
+            }
+        )

@@ -38,7 +38,7 @@ class BaseService(Generic[Model, CreateSchema, ReadSchema, ResponseSchema], ABC)
         repo_name: str = None,
     ) -> List[Model]:
         repo = self.get_repo(repo_name)
-        return await repo.get_all(skip=skip, limit=limit)
+        return await repo.get_all()
 
     async def create(
         self, item: CreateSchema, repo_name: str = None, **kwargs

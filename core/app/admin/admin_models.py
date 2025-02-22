@@ -20,7 +20,6 @@ class ScheduleAdmin(ModelView, model=Schedule):
     column_list = [
         Schedule.id,
         Schedule.classroom,
-        Schedule.day_of_week,
     ]
 
 
@@ -46,7 +45,6 @@ class LessonAdmin(ModelView, model=Lesson):
     form_ajax_refs = {
         "subject": {"fields": ["subject_name"]},
         "teacher": {"fields": ["first_name", "last_name"]},
-        "schedule": {"fields": ["day_of_week"]},
     }
 
 
