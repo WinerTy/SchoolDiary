@@ -56,3 +56,9 @@ async def get_lesson_repository(
     session: Annotated["AsyncSession", Depends(db_helper.session_getter)],
 ):
     yield LessonRepository(db=session)
+
+
+async def get_schedule_repository(
+    session: Annotated["AsyncSession", Depends(db_helper.session_getter)],
+):
+    yield SchoolRepository(db=session)
