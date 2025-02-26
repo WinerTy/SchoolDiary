@@ -1,5 +1,5 @@
 from datetime import date
-from typing import Annotated, TYPE_CHECKING
+from typing import Annotated, TYPE_CHECKING, Optional
 
 from fastapi import APIRouter, Depends
 from fastapi_pagination import paginate, Page
@@ -15,6 +15,7 @@ from api.v1.auth.fastapi_users import current_active_user
 from core.database.crud import LessonRepository
 from core.database.schemas import SuccessResponse
 from core.database.schemas.lesson import MultiCreateLessons
+from core.database.schemas.schedule import ReadSchedule
 from core.database.schemas.school import CreateSchool, ReadSchool
 from core.database.schemas.subject import ReadSubject, CreateSubjects
 from core.services.school_service import SchoolService
@@ -94,12 +95,17 @@ async def create_lessons(
     )
 
 
-@router.get("/{school_id}/{classroom_id}/schedule/")
+@router.get(
+    "/{school_id}/{classroom_id}/schedule/",
+    response_model=ReadSchedule,
+)
 async def get_schedule(
     school_id: int,
     classroom_id: int,
-    start_date: str,
-    end_date: date,
     service: Annotated["SchoolService", Depends(get_school_service)],
+    schedule_date: Optional[date] = None,
 ):
-    pass
+    result = await service.get_schedule_for_class(
+        school_id, classroom_id, schedule_date
+    )
+    return result

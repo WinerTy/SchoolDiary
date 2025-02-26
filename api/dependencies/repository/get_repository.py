@@ -9,6 +9,8 @@ from core.database.crud import (
     InvitationRepository,
     SubjectRepository,
     LessonRepository,
+    ScheduleRepository,
+    ClassroomRepository,
 )
 from core.database.utils import db_helper
 
@@ -62,3 +64,15 @@ async def get_schedule_repository(
     session: Annotated["AsyncSession", Depends(db_helper.session_getter)],
 ):
     yield SchoolRepository(db=session)
+
+
+async def get_schedule_repository(
+    session: Annotated["AsyncSession", Depends(db_helper.session_getter)],
+):
+    yield ScheduleRepository(db=session)
+
+
+async def get_classroom_repository(
+    session: Annotated["AsyncSession", Depends(db_helper.session_getter)],
+):
+    yield ClassroomRepository(db=session)

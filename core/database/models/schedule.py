@@ -20,13 +20,13 @@ class Schedule(BaseModel, PkIntMixin):
     )
 
     lessons: Mapped[List["Lesson"]] = relationship(
-        "Lesson", back_populates="schedule", order_by="Lesson.start_time"
+        "Lesson", back_populates="schedule", order_by="Lesson.start_time", lazy="joined"
     )
 
     schedule_date: Mapped[date] = mapped_column(Date, nullable=False)
 
     classroom: Mapped["Classroom"] = relationship(
-        "Classroom", back_populates="schedules"
+        "Classroom", back_populates="schedules", lazy="joined"
     )
 
     def __str__(self) -> str:

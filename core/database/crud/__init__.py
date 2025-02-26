@@ -6,10 +6,12 @@ __all__ = [
     "SubjectRepository",
     "LessonRepository",
     "ScheduleRepository",
+    "ClassroomRepository",
 ]
 
 
 from .application_repo import ApplicationRepository
+from .classroom_repo import ClassroomRepository
 from .invitation_repo import InvitationRepository
 from .lesson_repo import LessonRepository
 from .schedule_repo import ScheduleRepository

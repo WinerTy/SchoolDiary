@@ -5,6 +5,8 @@ __all__ = [
     "get_invitation_repository",
     "get_subject_repository",
     "get_lesson_repository",
+    "get_schedule_repository",
+    "get_classroom_repository",
 ]
 
 
@@ -15,4 +17,6 @@ from .get_repository import (
     get_invitation_repository,
     get_subject_repository,
     get_lesson_repository,
+    get_schedule_repository,
+    get_classroom_repository,
 )

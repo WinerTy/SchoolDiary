@@ -1,4 +1,9 @@
-from pydantic import BaseModel
+from datetime import date
+from typing import List
+
+from pydantic import BaseModel, computed_field
+
+from .lesson import ReadLesson
 
 
 class BaseSchedule(BaseModel):
@@ -6,8 +11,18 @@ class BaseSchedule(BaseModel):
 
 
 class CreateSchedule(BaseSchedule):
-    pass
+    classroom_id: int
+    schedule_date: date
 
 
 class ReadSchedule(BaseSchedule):
-    pass
+    id: int
+    lessons: List[ReadLesson]
+
+    @computed_field
+    @property
+    def count_lessons(self) -> int:
+        return len(self.lessons)
+
+    class Config:
+        from_attributes = True
