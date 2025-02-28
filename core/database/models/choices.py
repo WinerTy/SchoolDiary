@@ -20,13 +20,3 @@ class ChoicesInviteStatus(str, Enum):
     pending = "pending"
     accepted = "accepted"
     canceled = "canceled"
-
-
-class ChoicesDayOfWeek(str, Enum):
-    monday = "monday"
-    tuesday = "tuesday"
-    wednesday = "wednesday"
-    thursday = "thursday"
-    friday = "friday"
-    saturday = "saturday"
-    sunday = "sunday"

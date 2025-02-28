@@ -12,7 +12,7 @@ class CreateSubject(BaseSubject):
 
 
 class ReadSubject(BaseSubject):
-    id: int
+    pass
 
 
 class CreateSubjects(BaseModel):

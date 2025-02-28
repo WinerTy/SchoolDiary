@@ -1,66 +1,68 @@
-from contextlib import asynccontextmanager
-from typing import TYPE_CHECKING
+import contextlib
 
-from fastapi.security import OAuth2PasswordRequestForm
-from sqladmin.authentication import AuthenticationBackend
-from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.requests import Request
+from starlette.responses import Response
+from starlette_admin.auth import AdminConfig, AdminUser, AuthProvider
+from starlette_admin.exceptions import LoginFailed
 
-from core.config import config
+from api.dependencies.auth import get_users_db, get_user_manager
+from core.database.schemas.user import UserLogin
 from core.database.utils import db_helper
 
-if TYPE_CHECKING:
-    pass
+get_users_db_context = contextlib.asynccontextmanager(get_users_db)
+get_user_manager_context = contextlib.asynccontextmanager(get_user_manager)
 
 
-class AdminAuth(AuthenticationBackend):
-    def __init__(self, secret: str):
-        super().__init__(secret)
+class AdminAuthProvider(AuthProvider):
+    """
+    This is only for demo purpose, it's not a better
+    way to save and validate user credentials
+    """
 
-    @asynccontextmanager
-    async def get_session(self) -> AsyncSession:
-        session_gen = db_helper.session_getter()
-        session = await session_gen.__anext__()  # Получаем сессию из генератора
-        try:
-            yield session  # Передаем сессию в блок with
-        finally:
-            await session.close()  # Закрываем сессию
-            try:
-                await session_gen.__anext__()  # Завершаем генератор
-            except StopAsyncIteration:
-                pass  # Генератор завершился, это нормально
+    async def login(
+        self,
+        username: str,
+        password: str,
+        remember_me: bool,
+        request: Request,
+        response: Response,
+    ) -> Response:
+        async with db_helper.session_factory() as session:
+            async with get_users_db_context(session=session) as users_db:
+                async with get_user_manager_context(users_db=users_db) as user_manager:
+                    user = await user_manager.authenticate(
+                        credentials=UserLogin(username=username, password=password)
+                    )
+                    if user:
+                        request.session.update({"username": user.email})
+                        return response
 
-    async def login(self, request: Request) -> bool:  # WARNING Maybe not optimal
-        form = await request.form()
-        username, password = form["username"], form["password"]
-        data: OAuth2PasswordRequestForm = OAuth2PasswordRequestForm(
-            username=username, password=password
+        raise LoginFailed("Неправильный логин или пароль")
+
+    async def is_authenticated(self, request) -> bool:
+        async with db_helper.session_factory() as session:
+            async with get_users_db_context(session=session) as users_db:
+                user = await users_db.get_by_email(
+                    request.session.get("username", None)
+                )
+                if user and user.is_superuser:
+                    request.state.user = user
+                    return True
+        return False
+
+    def get_admin_config(self, request: Request) -> AdminConfig:
+        user = request.state.user  # Retrieve current user
+        # Update app title according to current_user
+        custom_app_title = "Hello, " + user.email + "!"
+        # Update logo url according to current_user
+        return AdminConfig(
+            app_title=custom_app_title,
         )
-        # async with self.get_session() as session:
-        #     user_db = User.get_db(session=session)
-        #     manager = UserManager(user_db)
-        #     result = await manager.authenticate(data)
 
-        # Validate username/password credentials
-        # And update session
-        request.session.update({"token": "..."})
+    def get_admin_user(self, request: Request) -> AdminUser:
+        user = request.state.user  # Retrieve current user
+        return AdminUser(username=user.email)
 
-        return True
-
-    async def logout(self, request: Request) -> bool:
-        # Usually you'd want to just clear the session
+    async def logout(self, request: Request, response: Response) -> Response:
         request.session.clear()
-        return True
-
-    async def authenticate(self, request: Request) -> bool:
-        token = request.session.get("token")
-
-        if not token:
-            return False
-
-        # Check the token in depth
-        return True
-
-
-async def get_admin_auth() -> AdminAuth:
-    return AdminAuth(secret=config.auth.secret)
+        return response

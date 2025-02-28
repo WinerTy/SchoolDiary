@@ -6,14 +6,11 @@ from fastapi_pagination import add_pagination
 
 from api import router
 from core.app.admin.admin_app import create_admin_app
-from core.app.admin.auth import get_admin_auth
 from core.database.utils import db_helper
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    authentication_backend = await get_admin_auth()
-    create_admin_app(app, authentication_backend)
     yield
     await db_helper.dispose()
 
@@ -23,7 +20,8 @@ def create_application() -> FastAPI:
         lifespan=lifespan,
         default_response_class=ORJSONResponse,
     )
-
+    admin_app = create_admin_app()
+    admin_app.mount_to(app)
     app.include_router(router)
     add_pagination(app)
 

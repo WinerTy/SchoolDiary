@@ -1,4 +1,5 @@
 from fastapi_users import schemas
+from pydantic import BaseModel
 
 from core.database.models.choices import ChoicesRole
 
@@ -19,3 +20,8 @@ class UserCreate(schemas.BaseUserCreate):
 
 class UserUpdate(schemas.BaseUserUpdate):
     role: ChoicesRole
+
+
+class UserLogin(BaseModel):
+    username: str
+    password: str

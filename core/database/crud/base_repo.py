@@ -85,3 +85,20 @@ class BaseRepository(Generic[Model, CreateSchema, ReadSchema, ResponseSchema]):
         except Exception as e:
             await self.db.rollback()
             raise HTTPException(status_code=400, detail=str(e))
+
+    async def multiple_create(self, items: list[CreateSchema]) -> list[Model]:
+        if not items:
+            raise HTTPException(status_code=400, detail="No items provided")
+        try:
+            db_items = [self.model(**item.model_dump()) for item in items]
+            self.db.add_all(db_items)
+            await self.db.commit()
+            for item in db_items:
+                await self.db.refresh(item)
+            return db_items
+        except IntegrityError as e:
+            await self.db.rollback()
+            raise HTTPException(status_code=400, detail="Item already exists")
+        except Exception as e:
+            await self.db.rollback()
+            raise HTTPException(status_code=500, detail=str(e))
