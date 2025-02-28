@@ -24,9 +24,16 @@ class ScheduleRepository(
         if schedule_date is None:
             schedule_date = date.today()
 
-        stmt = select(Schedule).where(
-            (Schedule.classroom_id == classroom_id)
-            & (Schedule.schedule_date == schedule_date)
+        stmt = (
+            select(Schedule)
+            .join(Classroom)
+            .where(
+                and_(
+                    Classroom.id == classroom_id,
+                    Schedule.schedule_date == schedule_date,
+                    Classroom.is_graduated == False,
+                )
+            )
         )
         result = await self.db.execute(stmt)
         result = result.scalars().first()
@@ -43,7 +50,7 @@ class ScheduleRepository(
         end_of_week = start_of_week + timedelta(days=6)
         return start_of_week, end_of_week
 
-    async def get_schedule_from_school(
+    async def get_schedule_for_school(
         self, school_id: int, schedule_date: Optional[date] = date.today()
     ):
         start_week, end_week = self.get_week_dates(schedule_date)
@@ -56,6 +63,7 @@ class ScheduleRepository(
                     Classroom.school_id == school_id,
                     Schedule.schedule_date >= start_week,
                     Schedule.schedule_date <= end_week,
+                    Classroom.is_graduated == False,
                 )
             )
         )

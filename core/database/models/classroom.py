@@ -1,6 +1,7 @@
+from datetime import date
 from typing import List
 
-from sqlalchemy import ForeignKey, String
+from sqlalchemy import ForeignKey, String, Date, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from core.database import BaseModel
@@ -19,6 +20,10 @@ class Classroom(BaseModel, PkIntMixin):
         ForeignKey("school.id", ondelete="cascade"), nullable=False
     )
 
+    year_of_graduation: Mapped[date] = mapped_column(Date, nullable=False)
+
+    is_graduated: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+
     school: Mapped["School"] = relationship(
         "School", back_populates="classrooms", foreign_keys=[school_id]
     )
@@ -33,4 +38,4 @@ class Classroom(BaseModel, PkIntMixin):
     )
 
     def __str__(self):
-        return self.class_name
+        return f"{self.class_name} - {self.year_of_graduation}"

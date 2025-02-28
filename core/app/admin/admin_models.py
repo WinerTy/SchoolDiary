@@ -151,6 +151,8 @@ class ClassroomAdmin(ModelView, model=Classroom):
 
     form_columns = [
         Classroom.class_name,
+        Classroom.year_of_graduation,
+        Classroom.is_graduated,
         "school",
         "class_teacher",
         "students",
