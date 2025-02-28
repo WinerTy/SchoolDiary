@@ -1,10 +1,10 @@
-from datetime import date
-from typing import TYPE_CHECKING, Optional
+from datetime import date, timedelta
+from typing import TYPE_CHECKING, Optional, Tuple
 
 from fastapi import HTTPException
-from sqlalchemy import select
+from sqlalchemy import select, and_
 
-from core.database import Schedule
+from core.database import Schedule, Classroom
 from core.database.crud.base_repo import BaseRepository
 from core.database.schemas.schedule import CreateSchedule, ReadSchedule
 
@@ -17,9 +17,6 @@ class ScheduleRepository(
 ):
     def __init__(self, db: "AsyncSession"):
         super().__init__(Schedule, db)
-
-    async def get_by_filter(self, school_id):
-        pass
 
     async def get_schedule_by_classroom_id(
         self, classroom_id: int, schedule_date: Optional[date] = None
@@ -40,7 +37,27 @@ class ScheduleRepository(
             )
         return result
 
+    @staticmethod
+    def get_week_dates(schedule_date: date) -> Tuple[date, date]:
+        start_of_week = schedule_date - timedelta(days=schedule_date.weekday())
+        end_of_week = start_of_week + timedelta(days=6)
+        return start_of_week, end_of_week
+
     async def get_schedule_from_school(
-        self, school_id, schedule_date: Optional[date] = None
+        self, school_id: int, schedule_date: Optional[date] = date.today()
     ):
-        pass
+        start_week, end_week = self.get_week_dates(schedule_date)
+
+        stmp = (
+            select(Schedule)
+            .join(Classroom)
+            .where(
+                and_(
+                    Classroom.school_id == school_id,
+                    Schedule.schedule_date >= start_week,
+                    Schedule.schedule_date <= end_week,
+                )
+            )
+        )
+        result = await self.db.execute(stmp)
+        return result.scalars().unique().all()

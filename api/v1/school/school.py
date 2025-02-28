@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, timedelta
 from typing import Annotated, TYPE_CHECKING, Optional
 
 from fastapi import APIRouter, Depends
@@ -8,11 +8,13 @@ from api.dependencies.repository import (
     get_school_repository,
     get_subject_repository,
     get_lesson_repository,
+    get_schedule_repository,
 )
 from api.dependencies.services.get_service import get_school_service
 from api.v1.auth.fastapi_users import current_active_teacher_user_or_admin_user
 from api.v1.auth.fastapi_users import current_active_user
 from core.database.crud import LessonRepository
+from core.database.crud import ScheduleRepository
 from core.database.schemas import SuccessResponse
 from core.database.schemas.lesson import MultiCreateLessons
 from core.database.schemas.schedule import ReadSchedule
@@ -108,4 +110,22 @@ async def get_schedule(
     result = await service.get_schedule_for_class(
         school_id, classroom_id, schedule_date
     )
+    return result
+
+
+@router.get("/date/")
+async def get_dates(current_date: date):
+    print(current_date.weekday())
+    start_of_week = current_date - timedelta(days=current_date.weekday())
+    end_of_week = start_of_week + timedelta(days=6)
+    return {"start": start_of_week, "end": end_of_week}
+
+
+@router.get("/{school_id}/test/")
+async def get_school_schedule(
+    school_id: int,
+    repo: Annotated["ScheduleRepository", Depends(get_schedule_repository)],
+    schedule_date: Optional[date] = date.today(),
+):
+    result = await repo.get_schedule_from_school(school_id, schedule_date)
     return result
