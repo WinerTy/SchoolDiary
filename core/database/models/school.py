@@ -2,6 +2,7 @@ from typing import List
 
 from sqlalchemy import ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from starlette.requests import Request
 
 from core.database import BaseModel
 from core.database.mixins import PkIntMixin
@@ -29,3 +30,11 @@ class School(BaseModel, PkIntMixin):
 
     def __str__(self):
         return self.school_name
+
+    # Метод который используется для отображения связи в админке
+    async def __admin_repr__(self, request: Request):
+        return self.school_name
+
+    # Метод который используется для создания выпадающего списка в админке для связи
+    async def __admin_select2_repr__(self, request: Request) -> str:
+        return f"{self.school_name} - {self.school_address}"

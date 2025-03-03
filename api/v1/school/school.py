@@ -116,8 +116,8 @@ async def get_schedule(
 @router.get("/{school_id}/schedule/")
 async def get_school_schedule(
     school_id: int,
-    repo: Annotated["ScheduleRepository", Depends(get_schedule_repository)],
+    service: Annotated["SchoolService", Depends(get_school_service)],
     schedule_date: Optional[date] = date.today(),
 ):
-    result = await repo.get_schedule_for_school(school_id, schedule_date)
+    result = await service.get_schedule_for_school(school_id, schedule_date)
     return result

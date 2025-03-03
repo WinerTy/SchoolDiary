@@ -51,3 +51,8 @@ class SchoolService(BaseService[School, CreateSchool, ReadSchool, ReadSchool]):
                 classroom_id, schedule_date
             )
             return schedule
+
+    async def get_schedule_for_school(self, school_id: int, schedule_date: Optional[date] = date.today()):
+        schedule_repo = self.get_repo("schedule")
+        schedule = await schedule_repo.get_schedule_for_school(school_id, schedule_date)
+        return schedule
