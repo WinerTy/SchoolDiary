@@ -5,7 +5,7 @@ from fastapi.responses import ORJSONResponse
 from fastapi_pagination import add_pagination
 
 from api import router
-from core.app.admin.admin_app import create_admin_app
+from core.app.admin.app import create_admin_app
 from core.database.utils import db_helper
 
 

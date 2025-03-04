@@ -1,11 +1,18 @@
 from datetime import date
-from typing import List
+from typing import List, TYPE_CHECKING
 
+from jinja2 import Template
 from sqlalchemy import ForeignKey, String, Date, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from starlette.requests import Request
 
 from core.database import BaseModel
 from core.database.mixins import PkIntMixin
+
+if TYPE_CHECKING:
+    from .school import School
+    from .user import User
+    from .schedule import Schedule
 
 
 class Classroom(BaseModel, PkIntMixin):
@@ -39,3 +46,10 @@ class Classroom(BaseModel, PkIntMixin):
 
     def __str__(self):
         return f"{self.class_name} - {self.year_of_graduation}"
+
+    async def __admin_repr__(self, request: Request) -> str:
+        return self.class_name
+
+    async def __admin_select2_repr__(self, request: Request) -> str:
+        template = Template("<span>{{ class_name }}</span>", autoescape=True)
+        return template.render(class_name=self.class_name)

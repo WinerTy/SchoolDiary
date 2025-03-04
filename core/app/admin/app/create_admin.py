@@ -1,15 +1,24 @@
 from starlette_admin.contrib.sqla import Admin
 
-from core.database import User, Subject, Lesson, School, Classroom, Schedule
-from core.database.utils import db_helper
-from .admin_models import (
+from core.app.admin.views import (
     UserAdmin,
     SubjectAdmin,
-    LessonAdmin,
+    TeacherInfoAdmin,
     SchoolAdmin,
-    ClassroomAdmin,
     ScheduleAdmin,
+    LessonAdmin,
+    ClassroomAdmin,
 )
+from core.database import (
+    User,
+    Subject,
+    Teacher,
+    Classroom,
+    School,
+    Schedule,
+    Lesson,
+)
+from core.database.utils import db_helper
 
 
 def create_admin_app() -> Admin:
@@ -23,16 +32,9 @@ def create_admin_app() -> Admin:
 
     admin.add_view(UserAdmin(User))
     admin.add_view(SubjectAdmin(Subject))
+    admin.add_view(TeacherInfoAdmin(Teacher))
     admin.add_view(LessonAdmin(Lesson))
     admin.add_view(ScheduleAdmin(Schedule))
     admin.add_view(SchoolAdmin(School))
     admin.add_view(ClassroomAdmin(Classroom))
-
-    # admin.add_view(SchoolAdmin)
-    # admin.add_view(ClassroomAdmin)
-    # admin.add_view(InvitationAdmin)
-    # admin.add_view(TeacherAdmin)
-    # admin.add_view(SubjectAdmin)
-    # admin.add_view(ScheduleAdmin)
-    # admin.add_view(LessonAdmin)
     return admin

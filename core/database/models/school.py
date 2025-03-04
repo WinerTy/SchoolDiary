@@ -1,11 +1,16 @@
-from typing import List
+from typing import List, TYPE_CHECKING
 
+from jinja2 import Template
 from sqlalchemy import ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from starlette.requests import Request
 
 from core.database import BaseModel
 from core.database.mixins import PkIntMixin
+
+if TYPE_CHECKING:
+    from .user import User
+    from .classroom import Classroom
 
 
 class School(BaseModel, PkIntMixin):
@@ -31,10 +36,11 @@ class School(BaseModel, PkIntMixin):
     def __str__(self):
         return self.school_name
 
-    # Метод который используется для отображения связи в админке
+    # Метод, который используется для отображения связи в админке
     async def __admin_repr__(self, request: Request):
         return self.school_name
 
-    # Метод который используется для создания выпадающего списка в админке для связи
+    # Метод, который используется для создания выпадающего списка в админке для связи
     async def __admin_select2_repr__(self, request: Request) -> str:
-        return f"{self.school_name} - {self.school_address}"
+        template = Template("<span>{{ school_name }}</span>", autoescape=True)
+        return template.render(school_name=self.school_name)

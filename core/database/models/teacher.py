@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import ForeignKey, String
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from core.database import BaseModel
@@ -14,7 +14,11 @@ class Teacher(BaseModel, PkIntMixin):
     user_id: Mapped[int] = mapped_column(
         ForeignKey("users.id", ondelete="cascade"), nullable=False, unique=True
     )
-    subject: Mapped[str] = mapped_column(String(128), nullable=False)
+    subject_id: Mapped[int] = mapped_column(
+        ForeignKey("subjects.id", ondelete="cascade")
+    )
+
+    subject: Mapped["Subject"] = relationship("Subject", foreign_keys=[subject_id])
 
     user: Mapped["User"] = relationship("User", foreign_keys=[user_id])
 

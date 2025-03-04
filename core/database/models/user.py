@@ -1,8 +1,10 @@
 from typing import TYPE_CHECKING, List
 
 from fastapi_users_db_sqlalchemy import SQLAlchemyBaseUserTable, SQLAlchemyUserDatabase
+from jinja2 import Template
 from sqlalchemy import Enum, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from starlette.requests import Request
 
 from core.database.mixins.id_mixin import PkIntMixin
 from core.database.models.choices import ChoicesRole
@@ -58,3 +60,13 @@ class User(BaseModel, PkIntMixin, SQLAlchemyBaseUserTable[int]):
 
     def __str__(self):
         return self.full_name
+
+    async def __admin_repr__(self, request: Request) -> str:
+        return self.full_name
+
+    async def __admin_select2_repr__(self, request: Request) -> str:
+        template = Template(
+            """<span>{{ full_name }}</span>""",
+            autoescape=True,
+        )
+        return template.render(full_name=self.full_name)
