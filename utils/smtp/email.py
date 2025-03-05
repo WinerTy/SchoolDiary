@@ -11,6 +11,7 @@ class EmailSchema(BaseModel):
     email: List[EmailStr]
 
 
+# Этот класс от BaseSettings, переписать в наследование в конфиге! TODO
 conf = ConnectionConfig(
     MAIL_USERNAME=config.smtp.mail_username,
     MAIL_PASSWORD=config.smtp.mail_password,
