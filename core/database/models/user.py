@@ -16,6 +16,7 @@ if TYPE_CHECKING:
     from .school import School
     from .classroom import Classroom
     from .lesson import Lesson
+    from .grade import Grade
 
 
 class User(BaseModel, PkIntMixin, SQLAlchemyBaseUserTable[int]):
@@ -49,6 +50,8 @@ class User(BaseModel, PkIntMixin, SQLAlchemyBaseUserTable[int]):
         "Teacher", back_populates="user", uselist=False
     )
     lessons: Mapped[List["Lesson"]] = relationship("Lesson", back_populates="teacher")
+
+    grades: Mapped[List["Grade"]] = relationship("Grade", back_populates="user")
 
     @property
     def full_name(self):

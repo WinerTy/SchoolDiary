@@ -6,8 +6,11 @@ from pydantic import BaseModel
 class BaseResponse(BaseModel):
     detail: str
     status: int
-    count_records: Optional[int] = None
 
 
 class SuccessResponse(BaseResponse):
+    count_records: Optional[int] = None
+
+
+class ErrorResponse(BaseResponse):
     pass

@@ -1,30 +1,7 @@
-from pathlib import Path
-from typing import List
+from fastapi_mail import MessageSchema, MessageType, FastMail
 
-from fastapi_mail import ConnectionConfig, MessageSchema, MessageType, FastMail
-from pydantic import BaseModel, EmailStr
-
-from core.config import config
-
-
-class EmailSchema(BaseModel):
-    email: List[EmailStr]
-
-
-# Этот класс от BaseSettings, переписать в наследование в конфиге! TODO
-conf = ConnectionConfig(
-    MAIL_USERNAME=config.smtp.mail_username,
-    MAIL_PASSWORD=config.smtp.mail_password,
-    MAIL_FROM=str(config.smtp.mail_from),
-    MAIL_PORT=config.smtp.mail_port,
-    MAIL_SERVER=config.smtp.mail_server,
-    MAIL_FROM_NAME=config.smtp.mail_from_name,
-    MAIL_STARTTLS=config.smtp.mail_starttls,
-    MAIL_SSL_TLS=config.smtp.mail_ssl_tls,
-    USE_CREDENTIALS=config.smtp.use_credentials,
-    VALIDATE_CERTS=config.smtp.validate_certs,
-    TEMPLATE_FOLDER=Path(__file__).parent.parent.parent / "templates",
-)
+from . import conf
+from .schemas import EmailSchema
 
 
 def send_email_via_html(email: EmailSchema, template_name: str):

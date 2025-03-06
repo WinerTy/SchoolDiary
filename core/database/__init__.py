@@ -10,13 +10,14 @@ __all__ = [
     "Subject",
     "Schedule",
     "Lesson",
+    "Grade",
 ]
-
 
 from .models.access_token import AccessToken
 from .models.applications import Applications
 from .models.base import BaseModel
 from .models.classroom import Classroom
+from .models.grade import Grade
 from .models.invitation import Invitation
 from .models.lesson import Lesson
 from .models.schedule import Schedule

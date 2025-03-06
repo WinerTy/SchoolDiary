@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
 from sqlalchemy import ForeignKey, Time, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -10,6 +10,7 @@ if TYPE_CHECKING:
     from .user import User
     from .subject import Subject
     from .schedule import Schedule
+    from .grade import Grade
 
 
 class Lesson(BaseModel, PkIntMixin):
@@ -34,6 +35,7 @@ class Lesson(BaseModel, PkIntMixin):
         "User", back_populates="lessons", foreign_keys=[teacher_id]
     )
     schedule: Mapped["Schedule"] = relationship("Schedule", back_populates="lessons")
+    grades: Mapped[List["Grade"]] = relationship("Grade", back_populates="lesson")
 
     def __str__(self):
         return self.subject.subject_name
