@@ -6,9 +6,11 @@ __all__ = [
     "ClassroomAdmin",
     "LessonAdmin",
     "ScheduleAdmin",
+    "GradeAdmin",
 ]
 
 from .classroom import ClassroomAdmin
+from .grade import GradeAdmin
 from .lesson import LessonAdmin
 from .schedule import ScheduleAdmin
 from .school import SchoolAdmin
