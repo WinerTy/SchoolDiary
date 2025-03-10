@@ -1,4 +1,4 @@
-from starlette_admin.contrib.sqla import ModelView
+from starlette_admin.contrib.sqla.ext.pydantic import ModelView
 
 
 class SubjectAdmin(ModelView):
