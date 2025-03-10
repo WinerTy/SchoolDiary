@@ -6,7 +6,7 @@ from core.services.base_services import BaseService
 
 class LessonService(BaseService[Lesson, CreateLesson, ReadLesson, ReadLesson]):
     def __init__(
-            self,
-            lesson_repo: BaseRepository,
+        self,
+        lesson_repo: BaseRepository,
     ):
         super().__init__(repositories={"lesson": lesson_repo})

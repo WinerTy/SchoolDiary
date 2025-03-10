@@ -7,8 +7,10 @@ __all__ = [
     "LessonAdmin",
     "ScheduleAdmin",
     "GradeAdmin",
+    "ApplicationAdmin",
 ]
 
+from .application import ApplicationAdmin
 from .classroom import ClassroomAdmin
 from .grade import GradeAdmin
 from .lesson import LessonAdmin

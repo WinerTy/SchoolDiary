@@ -38,6 +38,12 @@ class BaseRepository(Generic[Model, CreateSchema, ReadSchema, ResponseSchema]):
         return result.scalars().all()
 
     async def create(self, item: CreateSchema, **kwargs) -> Model:
+        """
+        Создает объект в базе данных.
+        :param item: Данные для создания (только Pydantic схема).
+        :param kwargs: Дополнительные параметры.
+        :return: Созданный объект.
+        """
         try:
             data = item.model_dump()
             data.update(kwargs)
@@ -87,6 +93,11 @@ class BaseRepository(Generic[Model, CreateSchema, ReadSchema, ResponseSchema]):
             raise HTTPException(status_code=400, detail=str(e))
 
     async def multiple_create(self, items: list[CreateSchema]) -> list[Model]:
+        """
+        Создает несколько объектов в базе данных.
+        :param items: Список данных для создания (только Pydantic схемы).
+        :return: Список созданных объектов.
+        """
         if not items:
             raise HTTPException(status_code=400, detail="No items provided")
         try:
