@@ -1,15 +1,14 @@
 from typing import Generic, Type, Any, Optional
 
 from fastapi.exceptions import HTTPException
-from pydantic import BaseModel
 from sqlalchemy import select, inspect
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.types import Model, CreateSchema, ReadSchema, ResponseSchema
+from core.types import Model, CreateSchema, ReadSchema, UpdateSchema
 
 
-class BaseRepository(Generic[Model, CreateSchema, ReadSchema, ResponseSchema]):
+class BaseRepository(Generic[Model, CreateSchema, ReadSchema, UpdateSchema]):
     def __init__(
         self, model: Type[Model], db: AsyncSession, pk_field: str = "id"
     ) -> None:
@@ -63,7 +62,7 @@ class BaseRepository(Generic[Model, CreateSchema, ReadSchema, ResponseSchema]):
     async def update(
         self,
         item_id: Any,
-        update_data: BaseModel,  # Только Pydantic схема
+        update_data: UpdateSchema,
     ) -> Model:
         """
         Обновляет объект в базе данных.

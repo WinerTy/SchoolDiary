@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 
 class InvitationRepository(
-    BaseRepository[Invitation, CreateInvite, ReadInvite, ReadInvite]
+    BaseRepository[Invitation, CreateInvite, ReadInvite, UpdateInvite]
 ):
     def __init__(self, db: "AsyncSession"):
         super().__init__(Invitation, db)

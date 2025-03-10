@@ -48,3 +48,12 @@ class BaseService(Generic[Model, CreateSchema, ReadSchema, ResponseSchema], ABC)
             return await repo.create(item, **kwargs)
         except Exception as e:
             raise e
+
+    async def update(
+        self,
+        item_id: int,
+        item: CreateSchema,
+        repo_name: str = None,
+    ) -> Model:
+        repo = self.get_repo(repo_name)
+        return await repo.update(item_id, item)

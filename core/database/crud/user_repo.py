@@ -4,7 +4,7 @@ from fastapi import HTTPException
 from sqlalchemy import select
 
 from core.database import User
-from core.database.schemas.user import UserCreate, UserRead
+from core.database.schemas.user import UserCreate, UserRead, UserUpdate
 from .base_repo import BaseRepository
 from ..models.choices import ChoicesRole
 
@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
 
 
-class UserRepository(BaseRepository[User, UserCreate, UserRead, UserRead]):
+class UserRepository(BaseRepository[User, UserCreate, UserRead, UserUpdate]):
     def __init__(self, db: "AsyncSession"):
         super().__init__(User, db)
 

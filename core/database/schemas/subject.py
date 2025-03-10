@@ -17,3 +17,7 @@ class ReadSubject(BaseSubject):
 
 class CreateSubjects(BaseModel):
     subjects: List[CreateSubject]
+
+
+class UpdateSubject(BaseModel):
+    pass

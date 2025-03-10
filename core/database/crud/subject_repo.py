@@ -6,14 +6,14 @@ from sqlalchemy.exc import IntegrityError
 from core.database import Subject
 from core.database.crud.base_repo import BaseRepository
 from core.database.schemas import SuccessResponse
-from core.database.schemas.subject import CreateSubject, ReadSubject
+from core.database.schemas.subject import CreateSubject, ReadSubject, UpdateSubject
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class SubjectRepository(
-    BaseRepository[Subject, CreateSubject, ReadSubject, ReadSubject]
+    BaseRepository[Subject, CreateSubject, ReadSubject, UpdateSubject]
 ):
     def __init__(self, db: "AsyncSession"):
         super().__init__(Subject, db)

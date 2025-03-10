@@ -29,3 +29,6 @@ class ApplicationRepository(
         self.db.add(record)
         await self.db.commit()
         return record
+
+    async def update(self, item_id: int, update_data: CreateApplication):
+        pass

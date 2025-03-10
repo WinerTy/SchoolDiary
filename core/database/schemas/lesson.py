@@ -60,3 +60,7 @@ class MultiCreateLessons(BaseModel):
                         f"{lesson2.start_time}-{lesson2.end_time}"
                     )
         return lessons
+
+
+class UpdateLesson(CreateLesson):
+    pass

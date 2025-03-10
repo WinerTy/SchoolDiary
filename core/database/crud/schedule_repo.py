@@ -6,14 +6,14 @@ from sqlalchemy import select, and_
 
 from core.database import Schedule, Classroom
 from core.database.crud.base_repo import BaseRepository
-from core.database.schemas.schedule import CreateSchedule, ReadSchedule
+from core.database.schemas.schedule import CreateSchedule, ReadSchedule, UpdateSchedule
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class ScheduleRepository(
-    BaseRepository[Schedule, CreateSchedule, ReadSchedule, ReadSchedule]
+    BaseRepository[Schedule, CreateSchedule, ReadSchedule, UpdateSchedule]
 ):
     def __init__(self, db: "AsyncSession"):
         super().__init__(Schedule, db)
@@ -29,7 +29,7 @@ class ScheduleRepository(
         return start_of_week, end_of_week
 
     async def get_schedule_by_classroom_id(
-            self, classroom_id: int, schedule_date: Optional[date] = None
+        self, classroom_id: int, schedule_date: Optional[date] = None
     ) -> Schedule:
         if schedule_date is None:
             schedule_date = date.today()
@@ -51,7 +51,7 @@ class ScheduleRepository(
         return result
 
     async def get_schedule_for_school(
-            self, school_id: int, schedule_date: Optional[date] = date.today()
+        self, school_id: int, schedule_date: Optional[date] = date.today()
     ):
         start_week, end_week = self.get_week_dates(schedule_date)
         stmt = await self._get_base_query()
