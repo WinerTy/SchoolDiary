@@ -1,7 +1,6 @@
 __all__ = [
     "UserRepository",
     "SchoolRepository",
-    "ApplicationRepository",
     "InvitationRepository",
     "SubjectRepository",
     "LessonRepository",
@@ -10,7 +9,6 @@ __all__ = [
 ]
 
 
-from .application_repo import ApplicationRepository
 from .classroom_repo import ClassroomRepository
 from .invitation_repo import InvitationRepository
 from .lesson_repo import LessonRepository

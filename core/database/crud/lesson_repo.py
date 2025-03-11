@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 
 from core.database import Lesson
-from core.database.crud.base_repo import BaseRepository
+from core.database.crud.base.repository import BaseRepository
 from core.database.schemas.lesson import CreateLesson, ReadLesson, UpdateLesson
 
 if TYPE_CHECKING:

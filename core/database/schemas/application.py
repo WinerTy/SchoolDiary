@@ -30,5 +30,6 @@ class ReadApplication(BaseApplication):
     status: str
 
 
-class UpdateApplication(CreateApplication):
-    pass
+class UpdateApplication(BaseModel):
+    director_full_name: Optional[str] = None
+    director_phone: Optional[str] = None

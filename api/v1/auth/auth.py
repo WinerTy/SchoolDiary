@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from api.dependencies.auth import authentication_backend
 from core.database import User
-from core.database.crud.base_repo import BaseRepository
+from core.database.crud.base.repository import BaseRepository
 from core.database.schemas.user import UserRead, UserCreate
 from core.database.utils import db_helper
 from .fastapi_users import fastapi_users

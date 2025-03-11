@@ -5,7 +5,7 @@ from fastapi import HTTPException
 from sqlalchemy import select, and_
 
 from core.database import Schedule, Classroom
-from core.database.crud.base_repo import BaseRepository
+from core.database.crud.base.repository import BaseRepository
 from core.database.schemas.schedule import CreateSchedule, ReadSchedule, UpdateSchedule
 
 if TYPE_CHECKING:

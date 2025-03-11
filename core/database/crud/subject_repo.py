@@ -4,7 +4,7 @@ from fastapi import HTTPException
 from sqlalchemy.exc import IntegrityError
 
 from core.database import Subject
-from core.database.crud.base_repo import BaseRepository
+from core.database.crud.base.repository import BaseRepository
 from core.database.schemas import SuccessResponse
 from core.database.schemas.subject import CreateSubject, ReadSubject, UpdateSubject
 

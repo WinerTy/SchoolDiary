@@ -6,8 +6,8 @@ from fastapi import HTTPException
 from sqlalchemy import select
 
 from core.database import Invitation
+from core.database.crud.base.repository import BaseRepository
 from core.database.schemas.invite import CreateInvite, ReadInvite, UpdateInvite
-from .base_repo import BaseRepository
 from ..models.choices import ChoicesInviteStatus
 
 if TYPE_CHECKING:

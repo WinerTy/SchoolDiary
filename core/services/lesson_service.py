@@ -1,5 +1,5 @@
 from core.database import Lesson
-from core.database.crud.base_repo import BaseRepository
+from core.database.crud.base.repository import BaseRepository
 from core.database.schemas.lesson import CreateLesson, ReadLesson
 from core.services.base_services import BaseService
 

@@ -1,5 +1,5 @@
 from typing import TypeVar
 
-from .base_repo import BaseRepository
+from core.database.crud.base.repository import BaseRepository
 
 RepositoryType = TypeVar("RepositoryType", bound=BaseRepository)
