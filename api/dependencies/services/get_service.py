@@ -21,8 +21,8 @@ from core.services import (
 
 if TYPE_CHECKING:
     from core.database.crud.application import ApplicationRepository
-    from core.database.crud.invitation_repo import InvitationRepository
-    from core.database.crud.user_repo import UserRepository
+    from core.database.crud.invitation import InvitationRepository
+    from core.database.crud.user import UserRepository
     from core.database.crud import (
         LessonRepository,
         ScheduleRepository,

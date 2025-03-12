@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 
 from core.database import Invitation
 from core.database.crud import UserRepository
-from core.database.crud.invitation_repo import InvitationRepository
+from core.database.crud.invitation import InvitationRepository
 from core.database.schemas.invite import CreateInvite, ReadInvite
 from .base_services import BaseService
 from ..database.models.choices import ChoicesRole

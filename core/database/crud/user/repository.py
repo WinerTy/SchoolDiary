@@ -5,8 +5,8 @@ from sqlalchemy import select
 
 from core.database import User
 from core.database.crud.base.repository import BaseRepository
+from core.database.models.choices import ChoicesRole
 from core.database.schemas.user import UserCreate, UserRead, UserUpdate
-from ..models.choices import ChoicesRole
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
