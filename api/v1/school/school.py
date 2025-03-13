@@ -8,7 +8,6 @@ from api.dependencies.repository import (
     get_school_repository,
     get_subject_repository,
     get_lesson_repository,
-    get_schedule_repository,
 )
 from api.dependencies.services.get_service import get_school_service
 from api.v1.auth.fastapi_users import current_active_teacher_user_or_admin_user
@@ -22,9 +21,8 @@ from core.services.school_service import SchoolService
 
 if TYPE_CHECKING:
     from core.database.crud import SubjectRepository
-    from core.database.crud.school_repo import SchoolRepository
+    from core.database.crud import SchoolRepository
     from core.database.crud import LessonRepository
-    from core.database.crud import ScheduleRepository
     from core.database import User
 
 

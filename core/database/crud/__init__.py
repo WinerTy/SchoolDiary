@@ -12,7 +12,7 @@ __all__ = [
 from .classroom import ClassroomRepository
 from .invitation import InvitationRepository
 from .lesson import LessonRepository
-from .schedule_repo import ScheduleRepository
-from .school_repo import SchoolRepository
-from .subject_repo import SubjectRepository
+from .schedule import ScheduleRepository
+from .school import SchoolRepository
+from .subject import SubjectRepository
 from .user import UserRepository
