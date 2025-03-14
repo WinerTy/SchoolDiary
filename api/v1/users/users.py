@@ -4,8 +4,8 @@ from fastapi import APIRouter, Depends
 
 from api.dependencies.services.get_service import get_invitation_service
 from api.v1.auth.fastapi_users import current_active_teacher_user_or_admin_user
+from core.database.crud.invitation.schemas import CreateInviteResponse
 from core.database.schemas import SuccessResponse
-from core.database.schemas.invite import CreateInvite
 
 if TYPE_CHECKING:
     from core.services.invitation_service import InvitationService
@@ -20,7 +20,7 @@ router = APIRouter(
 
 @router.post("/invite/", response_model=SuccessResponse)
 async def invite_user_for_group(
-    invite_data: CreateInvite,
+    invite_data: CreateInviteResponse,
     user: Annotated["User", Depends(current_active_teacher_user_or_admin_user)],
     service: Annotated["InvitationService", Depends(get_invitation_service)],
 ):
