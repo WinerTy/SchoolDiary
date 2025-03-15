@@ -1,4 +1,3 @@
-import datetime
 import uuid
 from typing import TYPE_CHECKING
 
@@ -12,13 +11,15 @@ from .schemas import CreateInvite, ReadInvite, UpdateInvite
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
+    from core.database.crud.base import BaseValidator
 
 
 class InvitationRepository(
     BaseRepository[Invitation, CreateInvite, ReadInvite, UpdateInvite]
 ):
-    def __init__(self, db: "AsyncSession"):
+    def __init__(self, db: "AsyncSession", validator: "BaseValidator"):
         super().__init__(Invitation, db)
+        self.validator = validator
 
     async def get_by_token(self, token: str) -> Invitation:
         stmt = select(self.model).where(Invitation.token == token)
@@ -37,20 +38,9 @@ class InvitationRepository(
         )
         return instance
 
-    async def verification_token(self, token: str) -> bool:
-        instance = await self.get_by_token(token)
-        date = datetime.datetime.now()
-        if (
-            instance.expires_at < date
-            or instance.status == ChoicesInviteStatus.accepted.value
-        ):
-            raise HTTPException(status_code=400, detail="Token expired or already used")
-        return True
-
     async def change_invite_status(self, token: str) -> Invitation:
         instance = await self.get_by_token(token)
-        is_verify = await self.verification_token(token)
-        if is_verify:
-            update_data = UpdateInvite(status=ChoicesInviteStatus.accepted.value)
-            await self.update(instance.id, update_data)
+        self.validator.validate(instance)
+        update_data = UpdateInvite(status=ChoicesInviteStatus.accepted.value)
+        await self.update(instance.id, update_data)
         return instance

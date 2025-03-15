@@ -13,8 +13,7 @@ if TYPE_CHECKING:
 
 router = APIRouter(
     prefix="/users",
-    tags=["Users"],
-    dependencies=[Depends(current_active_teacher_user_or_admin_user)],
+    tags=["Users"]
 )
 
 

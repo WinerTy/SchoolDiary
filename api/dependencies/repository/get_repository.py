@@ -2,7 +2,10 @@ from typing import Annotated, TYPE_CHECKING
 
 from fastapi import Depends
 
-from api.dependencies.repository.get_validator import get_application_validator
+from api.dependencies.repository.get_validator import (
+    get_application_validator,
+    get_invitation_validator,
+)
 from core.database.crud import (
     UserRepository,
     SchoolRepository,
@@ -13,6 +16,7 @@ from core.database.crud import (
 )
 from core.database.crud.application import ApplicationRepository
 from core.database.crud.application import ApplicationValidator
+from core.database.crud.base import BaseValidator
 from core.database.utils import db_helper
 
 if TYPE_CHECKING:
@@ -46,8 +50,9 @@ async def get_invitation_repository(
         "AsyncSession",
         Depends(db_helper.session_getter),
     ],
+    validator: Annotated["BaseValidator", Depends(get_invitation_validator)],
 ):
-    yield InvitationRepository(db=session)
+    yield InvitationRepository(db=session, validator=validator)
 
 
 async def get_subject_repository(
