@@ -1,3 +1,4 @@
+
 from core.database.crud.application import ApplicationValidator
 from core.database.crud.invitation import InvitationValidator
 

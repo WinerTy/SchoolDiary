@@ -1,3 +1,4 @@
+
 from typing import TYPE_CHECKING
 
 from fastapi import HTTPException
@@ -26,3 +27,4 @@ class ApplicationValidator(BaseValidator):
             raise HTTPException(
                 status_code=403, detail="You can't update this application"
             )
+
