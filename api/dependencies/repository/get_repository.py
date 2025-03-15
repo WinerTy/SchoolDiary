@@ -2,20 +2,28 @@ from typing import Annotated, TYPE_CHECKING
 
 from fastapi import Depends
 
+from api.dependencies.repository.get_validator import (
+    get_application_validator,
+    get_invitation_validator,
+)
 from core.database.crud import (
     UserRepository,
     SchoolRepository,
-    ApplicationRepository,
     InvitationRepository,
     SubjectRepository,
     LessonRepository,
-    ScheduleRepository,
     ClassroomRepository,
 )
+from core.database.crud.application import ApplicationRepository
+from core.database.crud.application import ApplicationValidator
+from core.database.crud.base import BaseValidator
 from core.database.utils import db_helper
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
+
+
+# SINGLETON
 
 
 async def get_user_repository(
@@ -35,8 +43,9 @@ async def get_application_repository(
         "AsyncSession",
         Depends(db_helper.session_getter),
     ],
+    validator: Annotated["ApplicationValidator", Depends(get_application_validator)],
 ):
-    yield ApplicationRepository(db=session)
+    yield ApplicationRepository(db=session, validator=validator)
 
 
 async def get_invitation_repository(
@@ -44,8 +53,9 @@ async def get_invitation_repository(
         "AsyncSession",
         Depends(db_helper.session_getter),
     ],
+    validator: Annotated["BaseValidator", Depends(get_invitation_validator)],
 ):
-    yield InvitationRepository(db=session)
+    yield InvitationRepository(db=session, validator=validator)
 
 
 async def get_subject_repository(
@@ -64,12 +74,6 @@ async def get_schedule_repository(
     session: Annotated["AsyncSession", Depends(db_helper.session_getter)],
 ):
     yield SchoolRepository(db=session)
-
-
-async def get_schedule_repository(
-    session: Annotated["AsyncSession", Depends(db_helper.session_getter)],
-):
-    yield ScheduleRepository(db=session)
 
 
 async def get_classroom_repository(

@@ -26,3 +26,7 @@ class ReadSchedule(BaseSchedule):
 
     class Config:
         from_attributes = True
+
+
+class UpdateSchedule(BaseSchedule):
+    pass

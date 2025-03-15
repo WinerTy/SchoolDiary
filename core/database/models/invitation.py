@@ -5,7 +5,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from core.database.mixins import PkIntMixin, TimestampMixin
 from .base import BaseModel
-from .choices import ChoicesInviteStatus
+from .choices import ChoicesInviteStatus, ChoicesRole
 
 
 class Invitation(BaseModel, PkIntMixin, TimestampMixin):
@@ -20,6 +20,12 @@ class Invitation(BaseModel, PkIntMixin, TimestampMixin):
         nullable=False,
         default=ChoicesInviteStatus.pending,
         server_default=ChoicesInviteStatus.pending.value,
+    )
+    invite_role: Mapped[str] = mapped_column(
+        Enum(ChoicesRole),
+        nullable=False,
+        default=ChoicesRole.student,
+        server_default=ChoicesRole.student.value,
     )
 
     def __str__(self):

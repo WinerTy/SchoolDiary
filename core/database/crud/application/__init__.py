@@ -1,5 +1,6 @@
 
-__all__ = ["ApplicationValidator"]
+__all__ = ["ApplicationRepository", "ApplicationValidator"]
 
 
+from .repository import ApplicationRepository
 from .validator import ApplicationValidator

@@ -1,7 +1,7 @@
 from abc import ABC
 from typing import Generic, Optional, List, Dict
 
-from core.database.crud.base_repo import BaseRepository
+from core.database.crud.base.repository import BaseRepository
 from core.types import Model, CreateSchema, ReadSchema, ResponseSchema
 
 
@@ -48,3 +48,12 @@ class BaseService(Generic[Model, CreateSchema, ReadSchema, ResponseSchema], ABC)
             return await repo.create(item, **kwargs)
         except Exception as e:
             raise e
+
+    async def update(
+        self,
+        item_id: int,
+        item: CreateSchema,
+        repo_name: str = None,
+    ) -> Model:
+        repo = self.get_repo(repo_name)
+        return await repo.update(item_id, item)

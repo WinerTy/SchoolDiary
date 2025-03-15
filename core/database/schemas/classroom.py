@@ -22,3 +22,7 @@ class ReadClassroom(BaseClassroom):
     @property
     def count_of_schedules(self) -> int:
         return len(self.students)
+
+
+class UpdateClassroom(BaseClassroom):
+    pass

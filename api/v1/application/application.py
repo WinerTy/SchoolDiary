@@ -1,15 +1,21 @@
-from typing import Annotated
+from typing import Annotated, TYPE_CHECKING
 
 from fastapi import APIRouter, Depends
-from fastapi.responses import Response
 
+from api.dependencies.repository import get_application_repository
 from api.dependencies.services.get_service import get_application_service
 from api.v1.auth.fastapi_users import current_active_user
 from core.database import User
-from core.database.models.choices import ChoicesApplicationStatus
-from core.database.schemas.application import CreateApplication, ReadApplication
-from core.services.application_service import ApplicationService
-from utils.smtp.email import send_test_email, EmailSchema
+from core.database.schemas.application import (
+    CreateApplication,
+    ReadApplication,
+    UpdateApplication,
+)
+
+if TYPE_CHECKING:
+    from core.database.crud.application import ApplicationRepository
+    from core.services.application_service import ApplicationService
+
 
 router = APIRouter(
     prefix="/application",
@@ -26,15 +32,11 @@ async def create_application(
     return await service.create(create_data, user_id=user.id)
 
 
-@router.get("/test/{status}")
-async def test_event(
-    status: ChoicesApplicationStatus,
-    service: Annotated["ApplicationService", Depends(get_application_service)],
+@router.patch("/{application_id}")
+async def update_application(
+    application_id: int,
+    update_data: UpdateApplication,
+    user: Annotated["User", Depends(current_active_user)],
+    repo: Annotated["ApplicationRepository", Depends(get_application_repository)],
 ):
-    return await service.repository.get_one_by_status(status)
-
-
-@router.post("/smtp/")
-async def send_email(email: EmailSchema):
-    await send_test_email(email)
-    return Response("OK")
+    return await repo.update(application_id, update_data, user.id)

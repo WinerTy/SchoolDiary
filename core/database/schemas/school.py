@@ -22,3 +22,7 @@ class ReadSchool(BaseSchool):
     director_id: int
 
     teachers: List[UserRead] = []
+
+
+class UpdateSchool(BaseSchool):
+    pass
