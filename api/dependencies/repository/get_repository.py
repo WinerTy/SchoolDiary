@@ -23,6 +23,9 @@ if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
 
 
+# SINGLETON
+
+
 async def get_user_repository(
     session: Annotated["AsyncSession", Depends(db_helper.session_getter)],
 ):

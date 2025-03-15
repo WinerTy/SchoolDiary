@@ -1,9 +1,13 @@
 from typing import TYPE_CHECKING
 
-from core.database import Invitation
+from core.database import Invitation, User
 from core.database.crud import UserRepository
 from core.database.crud.invitation import InvitationRepository
-from core.database.crud.invitation.schemas import CreateInvite, ReadInvite
+from core.database.crud.invitation.schemas import (
+    CreateInvite,
+    ReadInvite,
+    CreateInviteResponse,
+)
 from .base_services import BaseService
 from ..database.models.choices import ChoicesRole
 
@@ -32,9 +36,11 @@ class InvitationService(BaseService[Invitation, CreateInvite, ReadInvite, ReadIn
         repo = self.get_repo("invitation")
         return await repo.get_by_token(token)
 
-    async def create_invite(self, user_id: int, invited_by: int) -> Invitation:
+    async def create_invite(
+        self, invite_data: CreateInviteResponse, invited_by: "User"
+    ) -> Invitation:
         repo = self.get_repo("invitation")
-        return await repo.create_invite_via_token(user_id, invited_by)
+        return await repo.create_invite_via_token(invite_data, invited_by)
 
     async def get_user_by_id(self, user_id: int, repo_name: str = "user"):
         result = await self.get_by_id(user_id, repo_name)

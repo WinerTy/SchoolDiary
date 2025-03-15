@@ -9,3 +9,11 @@ class BaseValidator(ABC):
     @abstractmethod
     def validate(self, instance: "Model", **kwargs):
         pass
+
+    @abstractmethod
+    def update_validate(self, **kwargs):
+        pass
+
+    @abstractmethod
+    def create_validation(self, **kwargs):
+        pass

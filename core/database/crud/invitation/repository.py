@@ -7,17 +7,19 @@ from sqlalchemy import select
 from core.database import Invitation
 from core.database.crud.base.repository import BaseRepository
 from core.database.models.choices import ChoicesInviteStatus
-from .schemas import CreateInvite, ReadInvite, UpdateInvite
+from .schemas import CreateInvite, ReadInvite, UpdateInvite, CreateInviteResponse
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
-    from core.database.crud.base import BaseValidator
+    from core.database import User
+
+from .validator import InvitationValidator
 
 
 class InvitationRepository(
     BaseRepository[Invitation, CreateInvite, ReadInvite, UpdateInvite]
 ):
-    def __init__(self, db: "AsyncSession", validator: "BaseValidator"):
+    def __init__(self, db: "AsyncSession", validator: "InvitationValidator"):
         super().__init__(Invitation, db)
         self.validator = validator
 
@@ -30,11 +32,17 @@ class InvitationRepository(
         return instance
 
     async def create_invite_via_token(
-        self, user_id: int, invited_by: int
+        self, invite_data: CreateInviteResponse, invited_by: "User"
     ) -> Invitation:
+        self.validator.create_validation(invited_by, invite_data.role)
         token = str(uuid.uuid4())
         instance = await self.create(
-            CreateInvite(user_id=user_id, token=token, invited_by=invited_by)
+            CreateInvite(
+                user_id=invite_data.user_id,
+                invite_role=invite_data.role,
+                token=token,
+                invited_by=invited_by.id,
+            )
         )
         return instance
 

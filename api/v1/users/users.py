@@ -11,10 +11,7 @@ if TYPE_CHECKING:
     from core.services.invitation_service import InvitationService
     from core.database import User
 
-router = APIRouter(
-    prefix="/users",
-    tags=["Users"]
-)
+router = APIRouter(prefix="/users", tags=["Users"])
 
 
 @router.post("/invite/", response_model=SuccessResponse)
@@ -23,7 +20,7 @@ async def invite_user_for_group(
     user: Annotated["User", Depends(current_active_teacher_user_or_admin_user)],
     service: Annotated["InvitationService", Depends(get_invitation_service)],
 ):
-    await service.create_invite(user_id=invite_data.user_id, invited_by=user.id)
+    await service.create_invite(invite_data=invite_data, invited_by=user)
     return SuccessResponse(
         detail="Приглашение отправлено на электронную почту пользователя, срок действия приглашения 3 дня",
         status=200,
