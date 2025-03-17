@@ -34,8 +34,13 @@ class InvitationRepository(
     async def create_invite_via_token(
         self, invite_data: CreateInviteResponse, invited_by: "User"
     ) -> Invitation:
-        self.validator.create_validation(invited_by, invite_data.role)
+        self.validator.validate(
+            action="create",
+            user=invited_by,
+            create_data=invite_data,
+        )
         token = str(uuid.uuid4())
+        # TODO fix type warning
         instance = await self.create(
             CreateInvite(
                 user_id=invite_data.user_id,
@@ -46,9 +51,9 @@ class InvitationRepository(
         )
         return instance
 
-    async def change_invite_status(self, token: str) -> Invitation:
+    async def change_invite_status(self, token: str, user: "User") -> Invitation:
         instance = await self.get_by_token(token)
-        self.validator.validate(instance)
+        self.validator.validate(action="update", instance=instance, user=user)
         update_data = UpdateInvite(status=ChoicesInviteStatus.accepted.value)
         await self.update(instance.id, update_data)
         return instance

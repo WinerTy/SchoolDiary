@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 if TYPE_CHECKING:
     from core.types import Model
@@ -7,13 +7,10 @@ if TYPE_CHECKING:
 
 class BaseValidator(ABC):
     @abstractmethod
-    def validate(self, instance: "Model", **kwargs):
-        pass
-
-    @abstractmethod
-    def update_validate(self, **kwargs):
-        pass
-
-    @abstractmethod
-    def create_validation(self, **kwargs):
+    def validate(
+        self,
+        instance: "Model",
+        action: Literal["create", "read", "update", "delete"],
+        **kwargs
+    ):
         pass

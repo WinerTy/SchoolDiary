@@ -25,11 +25,11 @@ class InvitationService(BaseService[Invitation, CreateInvite, ReadInvite, ReadIn
             repositories={"invitation": invitation_repository, "user": user_repository},
         )
 
-    async def accept_invite(self, token: str) -> Invitation:
+    async def accept_invite(self, token: str, user: "User") -> Invitation:
         user_repo = self.get_repo("user")
         invite_repo = self.get_repo("invitation")
-        token = await invite_repo.change_invite_status(token)
-        await user_repo.change_user_role(token.user_id, ChoicesRole.student)
+        token = await invite_repo.change_invite_status(token, user=user)
+        await user_repo.change_user_role(token.user_id, ChoicesRole.student)  # TODO Fix
         return token
 
     async def get_invite_by_token(self, token: str) -> Invitation | None:
@@ -39,6 +39,7 @@ class InvitationService(BaseService[Invitation, CreateInvite, ReadInvite, ReadIn
     async def create_invite(
         self, invite_data: CreateInviteResponse, invited_by: "User"
     ) -> Invitation:
+        await self.get_user_by_id(invite_data.user_id)  # for check user record in DB
         repo = self.get_repo("invitation")
         return await repo.create_invite_via_token(invite_data, invited_by)
 

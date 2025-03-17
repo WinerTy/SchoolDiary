@@ -3,7 +3,10 @@ from typing import TYPE_CHECKING, Annotated
 from fastapi import APIRouter, Depends
 
 from api.dependencies.services.get_service import get_invitation_service
-from api.v1.auth.fastapi_users import current_active_teacher_user_or_admin_user
+from api.v1.auth.fastapi_users import (
+    current_active_teacher_user_or_admin_user,
+    current_active_user,
+)
 from core.database.crud.invitation.schemas import CreateInviteResponse
 from core.database.schemas import SuccessResponse
 
@@ -30,7 +33,8 @@ async def invite_user_for_group(
 @router.get("/invite/accept/{token}")
 async def accept_invite(
     token: str,
+    user: Annotated["User", Depends(current_active_user)],
     service: Annotated["InvitationService", Depends(get_invitation_service)],
 ):
-    result = await service.accept_invite(token=token)
+    result = await service.accept_invite(token=token, user=user)
     return result
