@@ -28,8 +28,8 @@ class InvitationService(BaseService[Invitation, CreateInvite, ReadInvite, ReadIn
         user_repo = self.get_repo("user")
         invite_repo = self.get_repo("invitation")
         invite = await invite_repo.change_invite_status(token, user=user)
-        await user_repo.change_user_role(invite.user_id, invite.role)  # TODO Fix
-        return token
+        await user_repo.change_user_role(invite.user_id, invite.invite_role)  # TODO Fix
+        return invite
 
     async def get_invite_by_token(self, token: str) -> Invitation | None:
         repo = self.get_repo("invitation")
