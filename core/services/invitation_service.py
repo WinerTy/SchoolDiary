@@ -9,7 +9,6 @@ from core.database.crud.invitation.schemas import (
     CreateInviteResponse,
 )
 from .base_services import BaseService
-from ..database.models.choices import ChoicesRole
 
 if TYPE_CHECKING:
     pass
@@ -28,8 +27,8 @@ class InvitationService(BaseService[Invitation, CreateInvite, ReadInvite, ReadIn
     async def accept_invite(self, token: str, user: "User") -> Invitation:
         user_repo = self.get_repo("user")
         invite_repo = self.get_repo("invitation")
-        token = await invite_repo.change_invite_status(token, user=user)
-        await user_repo.change_user_role(token.user_id, ChoicesRole.student)  # TODO Fix
+        invite = await invite_repo.change_invite_status(token, user=user)
+        await user_repo.change_user_role(invite.user_id, invite.role)  # TODO Fix
         return token
 
     async def get_invite_by_token(self, token: str) -> Invitation | None:

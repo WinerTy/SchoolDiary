@@ -51,7 +51,7 @@ class InvitationRepository(
         )
         return instance
 
-    async def change_invite_status(self, token: str, user: "User") -> Invitation:
+    async def change_invite_status(self, token: str, user: "User") -> "Invitation":
         instance = await self.get_by_token(token)
         self.validator.validate(action="update", instance=instance, user=user)
         update_data = UpdateInvite(status=ChoicesInviteStatus.accepted.value)
