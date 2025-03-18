@@ -2,19 +2,22 @@ from abc import ABC
 from typing import Generic, Optional, List, Dict
 
 from core.database.crud.base.repository import BaseRepository
-from core.types import Model, CreateSchema, ReadSchema, ResponseSchema
+from core.types import Model, CreateSchema, ReadSchema, ResponseSchema, UpdateSchema
 
 
 class BaseService(Generic[Model, CreateSchema, ReadSchema, ResponseSchema], ABC):
     def __init__(
         self,
-        repositories: Dict[str, BaseRepository] = {},
+        repositories: Dict[
+            str, "BaseRepository[Model, CreateSchema, ReadSchema, UpdateSchema]"
+        ] = {},
     ):
         self.repositories = repositories
 
+    # TODO FIX RETURN REPO TYPES
     def get_repo(
         self, repo_name: str = None
-    ) -> BaseRepository[Model, CreateSchema, ReadSchema, ResponseSchema]:
+    ) -> "BaseRepository[Model, CreateSchema, ReadSchema, UpdateSchema]":
         if repo_name is None:
             if not self.repositories:
                 raise ValueError("No repositories available")
@@ -25,7 +28,7 @@ class BaseService(Generic[Model, CreateSchema, ReadSchema, ResponseSchema], ABC)
             raise ValueError(f"Repository {repo_name} not found")
         return repo
 
-    async def get_by_id(self, item_id: int, repo_name: str = None) -> Optional[Model]:
+    async def get_by_id(self, item_id: int, repo_name: str = None) -> Optional["Model"]:
         repo = self.get_repo(repo_name)
         return await repo.get_by_id(item_id)
 
@@ -34,13 +37,13 @@ class BaseService(Generic[Model, CreateSchema, ReadSchema, ResponseSchema], ABC)
         skip: int = 0,
         limit: int = 100,
         repo_name: str = None,
-    ) -> List[Model]:
+    ) -> List["Model"]:
         repo = self.get_repo(repo_name)
         return await repo.get_all()
 
     async def create(
         self, item: CreateSchema, repo_name: str = None, **kwargs
-    ) -> Model:
+    ) -> "Model":
         try:
             repo = self.get_repo(repo_name)
             return await repo.create(item, **kwargs)

@@ -43,10 +43,10 @@ async def accept_invite(
 @router.get("/invite/{invite_id}")
 async def update_invite(
     invite_id: int,
-    # user: Annotated["User", Depends(current_active_user)],
+    user: Annotated["User", Depends(current_active_user)],
     service: Annotated["InvitationService", Depends(get_invitation_service)],
 ):
-    result = await service.get_by_id(invite_id, "invitation")
+    result = await service.get_invite(invite_id=invite_id, user=user)
     return result
 
 

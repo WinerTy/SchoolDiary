@@ -29,6 +29,11 @@ class InvitationValidator(BaseValidator, PermissionMixin):
             self.validate_expires_date(instance)
             self.validate_record_permission(instance=instance, user_id=user.id)
 
+        if action == "read":
+            self.validate_record_permission(
+                instance=instance, user_id=user.id, model_field="invited_by"
+            )
+
     @staticmethod
     def validate_expires_date(instance: "Invitation"):
         date = datetime.now()

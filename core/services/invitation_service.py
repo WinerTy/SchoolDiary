@@ -7,6 +7,7 @@ from core.database.crud.invitation.schemas import (
     CreateInvite,
     ReadInvite,
     CreateInviteResponse,
+    UpdateInvite,
 )
 from .base_services import BaseService
 
@@ -45,3 +46,13 @@ class InvitationService(BaseService[Invitation, CreateInvite, ReadInvite, ReadIn
     async def get_user_by_id(self, user_id: int, repo_name: str = "user"):
         result = await self.get_by_id(user_id, repo_name)
         return result
+
+    async def get_invite(self, invite_id: int, user: "User"):
+        repo = self.get_repo("invitation")
+        return await repo.get_invite_by_id(invite_id, user)
+
+    async def update_invite(
+        self, invite_id: int, user: "User", update_data: UpdateInvite
+    ) -> Invitation:
+        repo: InvitationRepository = self.get_repo("invitation")
+        return await repo.change_invite_staCommittus(invite_id, user, update_data)
