@@ -1,6 +1,8 @@
 from typing import TypeVar
 
-from core.database import BaseModel as SqlBase, BaseModel
+from pydantic import BaseModel
+
+from core.database import BaseModel as SqlBase
 
 Model = TypeVar("Model", bound=SqlBase)
 CreateSchema = TypeVar("CreateSchema", bound=BaseModel)

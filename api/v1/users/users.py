@@ -38,3 +38,22 @@ async def accept_invite(
 ):
     result = await service.accept_invite(token=token, user=user)
     return result
+
+
+@router.get("/invite/{invite_id}")
+async def update_invite(
+    invite_id: int,
+    # user: Annotated["User", Depends(current_active_user)],
+    service: Annotated["InvitationService", Depends(get_invitation_service)],
+):
+    result = await service.get_by_id(invite_id, "invitation")
+    return result
+
+
+@router.patch("/invite/{id}")
+async def update_invite(
+    id: int,
+    user: Annotated["User", Depends(current_active_user)],
+    service: Annotated["InvitationService", Depends(get_invitation_service)],
+):
+    pass
