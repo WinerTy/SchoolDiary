@@ -1,8 +1,7 @@
-
-
 from abc import ABC, abstractmethod
 
 from core.types import Model
+
 
 class BaseValidator(ABC):
 
@@ -11,12 +10,10 @@ class BaseValidator(ABC):
         """
         Базовый метод проверки
         :param instance: Объект проверки
-        :param **kwargs: Дополнительные аргументы
+        :param kwargs: Дополнительные аргументы
         :raises HTTPException: Вызов HTTP ошибки
         """
         pass
-
-
 
     @abstractmethod
     def validate_permisions(self, instance: Model, user_id: int):

@@ -1,7 +1,7 @@
-from typing import Generic, Type, Any, Optional
+from typing import Generic, Type, Any, Optional, Union
 
 from fastapi.exceptions import HTTPException
-from sqlalchemy import select, inspect
+from sqlalchemy import select, inspect, delete
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -109,6 +109,17 @@ class BaseRepository(Generic[Model, CreateSchema, ReadSchema, UpdateSchema]):
         except IntegrityError as e:
             await self.db.rollback()
             raise HTTPException(status_code=400, detail="Item already exists")
+        except Exception as e:
+            await self.db.rollback()
+            raise HTTPException(status_code=500, detail=str(e))
+
+    async def delete(self, item_id: Union[int, str]) -> None:
+        try:
+            stmt = delete(self.model).where(
+                getattr(self.model, self.pk_field) == item_id
+            )
+            await self.db.execute(stmt)
+            await self.db.commit()
         except Exception as e:
             await self.db.rollback()
             raise HTTPException(status_code=500, detail=str(e))

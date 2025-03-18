@@ -7,7 +7,12 @@ from sqlalchemy import select
 from core.database import Invitation
 from core.database.crud.base.repository import BaseRepository
 from core.database.models.choices import ChoicesInviteStatus
-from .schemas import CreateInvite, ReadInvite, UpdateInvite, CreateInviteResponse
+from .schemas import (
+    CreateInvite,
+    ReadInvite,
+    UpdateInvite,
+    CreateInviteResponse,
+)
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
@@ -61,3 +66,7 @@ class InvitationRepository(
         invite = await self.get_by_id(invite_id)
         self.validator.validate(action="read", instance=invite, user=user)
         return invite
+
+    async def delete_invite(self, invite_id: int, user: "User"):
+        invite = await self.get_invite_by_id(invite_id, user)
+        await self.delete(invite.id)
