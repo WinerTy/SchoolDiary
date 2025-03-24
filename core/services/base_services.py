@@ -1,23 +1,20 @@
 from abc import ABC
-from typing import Generic, Optional, List, Dict
+from typing import TypeVar, Generic, Optional, List, Dict, Any
 
 from core.database.crud.base.repository import BaseRepository
-from core.types import Model, CreateSchema, ReadSchema, ResponseSchema, UpdateSchema
+from core.types import Model, CreateSchema, ReadSchema, ResponseSchema
+
+RepositoryType = TypeVar("RepositoryType", bound=BaseRepository[Any, Any, Any, Any])
 
 
 class BaseService(Generic[Model, CreateSchema, ReadSchema, ResponseSchema], ABC):
     def __init__(
         self,
-        repositories: Dict[
-            str, "BaseRepository[Model, CreateSchema, ReadSchema, UpdateSchema]"
-        ] = {},
+        repositories: Dict[str, RepositoryType],
     ):
         self.repositories = repositories
 
-    # TODO FIX RETURN REPO TYPES
-    def get_repo(
-        self, repo_name: str = None
-    ) -> "BaseRepository[Model, CreateSchema, ReadSchema, UpdateSchema]":
+    def get_repo(self, repo_name: str = None) -> RepositoryType:
         if repo_name is None:
             if not self.repositories:
                 raise ValueError("No repositories available")
