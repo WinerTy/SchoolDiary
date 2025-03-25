@@ -12,12 +12,14 @@ from api.dependencies.repository import (
     get_schedule_repository,
     get_classroom_repository,
 )
+from api.dependencies.smtp.smtp_dep import get_smtp_service
 from core.services import (
     ApplicationService,
     InvitationService,
     LessonService,
     SchoolService,
 )
+from smtp.service import SMTPService
 
 if TYPE_CHECKING:
     from core.database.crud.application import ApplicationRepository
@@ -41,8 +43,9 @@ async def get_invitation_service(
         "InvitationRepository", Depends(get_invitation_repository)
     ],
     user_repo: Annotated["UserRepository", Depends(get_user_repository)],
+    smtp: Annotated["SMTPService", Depends(get_smtp_service)],
 ):
-    yield InvitationService(invitation_repo, user_repo)
+    yield InvitationService(invitation_repo, user_repo, smtp=smtp)
 
 
 async def get_school_service(

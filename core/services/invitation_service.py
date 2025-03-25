@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import TYPE_CHECKING
 
 from core.database import Invitation, User
@@ -8,6 +9,8 @@ from core.database.crud.invitation.schemas import (
     ReadInvite,
     CreateInviteResponse,
 )
+from smtp.schemas import EmailSchema
+from smtp.service import SMTPService
 from .base_services import BaseService
 
 if TYPE_CHECKING:
@@ -19,7 +22,9 @@ class InvitationService(BaseService[Invitation, CreateInvite, ReadInvite, ReadIn
         self,
         invitation_repository: InvitationRepository,
         user_repository: UserRepository,
+        smtp: "SMTPService",
     ):
+        self.smtp = smtp
         super().__init__(
             repositories={"invitation": invitation_repository, "user": user_repository},
         )
@@ -36,15 +41,30 @@ class InvitationService(BaseService[Invitation, CreateInvite, ReadInvite, ReadIn
         return await repo.get_by_token(token)
 
     async def create_invite(
-        self, invite_data: CreateInviteResponse, invited_by: "User"
+        self,
+        invite_data: CreateInviteResponse,
+        invited_by: "User",
     ) -> Invitation:
-        await self.get_user_by_id(invite_data.user_id)  # for check user record in DB
+        user = await self.get_user_by_id(invite_data.user_id)
         repo = self.get_repo("invitation")
-        return await repo.create_invite_via_token(invite_data, invited_by)
+        invite: Invitation = await repo.create_invite_via_token(invite_data, invited_by)
+        await self.smtp.send_email(
+            subject="Вас пригласили",
+            email_content=EmailSchema(
+                email=[user.email],
+                body={
+                    "role": invite.invite_role.value,
+                    "recipient_name": user.full_name,
+                    "url": f"http://localhost:8000/api/users/invite/accept/{invite.token}",
+                    "date": datetime.today(),
+                },
+            ),
+            template_name="invite_email.html",
+        )
+        return invite
 
-    async def get_user_by_id(self, user_id: int, repo_name: str = "user"):
-        result = await self.get_by_id(user_id, repo_name)
-        return result
+    async def get_user_by_id(self, user_id: int) -> User:
+        return await self.get_by_id(user_id, repo_name="user")
 
     async def get_invite(self, invite_id: int, user: "User") -> Invitation:
         repo = self.get_repo("invitation")
