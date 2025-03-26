@@ -18,6 +18,7 @@ from core.services import (
     InvitationService,
     LessonService,
     SchoolService,
+    UserService,
 )
 from smtp.service import SMTPService
 
@@ -64,3 +65,9 @@ async def get_lesson_service(
     lesson_repo: Annotated["LessonRepository", Depends(get_lesson_repository)],
 ):
     yield LessonService(lesson_repo)
+
+
+async def get_user_service(
+    user_repo: Annotated["UserRepository", Depends(get_user_repository)],
+) -> UserService:
+    yield UserService(user_repo)
