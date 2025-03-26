@@ -7,7 +7,12 @@ from sqlalchemy import select
 from core.database import Invitation
 from core.database.crud.base.repository import BaseRepository
 from core.database.models.choices import ChoicesInviteStatus
-from .schemas import CreateInvite, ReadInvite, UpdateInvite, CreateInviteResponse
+from .schemas import (
+    CreateInvite,
+    ReadInvite,
+    UpdateInvite,
+    CreateInviteResponse,
+)
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
@@ -34,7 +39,11 @@ class InvitationRepository(
     async def create_invite_via_token(
         self, invite_data: CreateInviteResponse, invited_by: "User"
     ) -> Invitation:
-        self.validator.create_validation(invited_by, invite_data.role)
+        self.validator.validate(
+            action="create",
+            user=invited_by,
+            create_data=invite_data,
+        )
         token = str(uuid.uuid4())
         instance = await self.create(
             CreateInvite(
@@ -46,9 +55,18 @@ class InvitationRepository(
         )
         return instance
 
-    async def change_invite_status(self, token: str) -> Invitation:
+    async def change_invite_status(self, token: str, user: "User") -> "Invitation":
         instance = await self.get_by_token(token)
-        self.validator.validate(instance)
+        self.validator.validate(action="update", instance=instance, user=user)
         update_data = UpdateInvite(status=ChoicesInviteStatus.accepted.value)
         await self.update(instance.id, update_data)
         return instance
+
+    async def get_invite_by_id(self, invite_id: int, user: "User") -> Invitation:
+        invite = await self.get_by_id(invite_id)
+        self.validator.validate(action="read", instance=invite, user=user)
+        return invite
+
+    async def delete_invite(self, invite_id: int, user: "User"):
+        invite = await self.get_invite_by_id(invite_id, user)
+        await self.delete(invite.id)

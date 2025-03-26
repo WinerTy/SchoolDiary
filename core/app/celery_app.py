@@ -8,6 +8,13 @@ celery_app = Celery(
     backend=str(config.redis.url),
 )
 
-celery_app.conf.update(,
+celery_app.conf.update(
+    broker_connection_retry_on_startup=True,
+    task_serializer="json",
+    result_serializer="json",
+    accept_content=["json"],
+    timezone="UTC",
+    enable_utc=True,
+)
 
 celery_app.autodiscover_tasks()

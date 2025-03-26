@@ -2,7 +2,7 @@ from typing import List
 
 from pydantic import BaseModel
 
-from core.database.schemas.user import UserRead
+from core.database.crud.user import UserRead
 
 
 class BaseSchool(BaseModel):

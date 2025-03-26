@@ -6,7 +6,7 @@ from starlette_admin.auth import AdminConfig, AdminUser, AuthProvider
 from starlette_admin.exceptions import LoginFailed
 
 from api.dependencies.auth import get_users_db, get_user_manager
-from core.database.schemas.user import UserLogin
+from core.database.crud.user import UserLogin
 from core.database.utils import db_helper
 
 get_users_db_context = contextlib.asynccontextmanager(get_users_db)

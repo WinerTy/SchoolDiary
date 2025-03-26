@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from sqlalchemy import ForeignKey, Enum, text, String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from core.database.mixins import PkIntMixin, TimestampMixin
 from .base import BaseModel
@@ -27,6 +27,9 @@ class Invitation(BaseModel, PkIntMixin, TimestampMixin):
         default=ChoicesRole.student,
         server_default=ChoicesRole.student.value,
     )
+
+    user: Mapped["User"] = relationship("User", foreign_keys=[user_id], lazy="joined")
+    invited_by_user: Mapped["User"] = relationship("User", foreign_keys=[invited_by])
 
     def __str__(self):
         return self.token
