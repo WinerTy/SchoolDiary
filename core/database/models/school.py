@@ -11,6 +11,7 @@ from core.database.mixins import PkIntMixin
 if TYPE_CHECKING:
     from .user import User
     from .classroom import Classroom
+    from .school_subject import SchoolSubject
 
 
 class School(BaseModel, PkIntMixin):
@@ -31,6 +32,12 @@ class School(BaseModel, PkIntMixin):
     )
     classrooms: Mapped[List["Classroom"]] = relationship(
         "Classroom", back_populates="school", foreign_keys="[Classroom.school_id]"
+    )
+
+    school_subject: Mapped[List["SchoolSubject"]] = relationship(
+        "SchoolSubject",
+        back_populates="school",
+        foreign_keys="[SchoolSubject.school_id]",
     )
 
     def __str__(self):
