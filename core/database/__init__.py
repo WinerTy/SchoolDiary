@@ -12,12 +12,14 @@ __all__ = [
     "Lesson",
     "Grade",
     "SchoolSubject",
+    "ClassroomSubjects",
 ]
 
 from .models.access_token import AccessToken
 from .models.applications import Applications
 from .models.base import BaseModel
 from .models.classroom import Classroom
+from .models.classroom_subjects import ClassroomSubjects
 from .models.grade import Grade
 from .models.invitation import Invitation
 from .models.lesson import Lesson

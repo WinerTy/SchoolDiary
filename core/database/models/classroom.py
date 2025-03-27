@@ -13,6 +13,7 @@ if TYPE_CHECKING:
     from .school import School
     from .user import User
     from .schedule import Schedule
+    from .classroom_subjects import ClassroomSubjects
 
 
 class Classroom(BaseModel, PkIntMixin):
@@ -42,6 +43,11 @@ class Classroom(BaseModel, PkIntMixin):
     )
     schedules: Mapped[List["Schedule"]] = relationship(
         "Schedule", back_populates="classroom", foreign_keys="[Schedule.classroom_id]"
+    )
+
+    subjects: Mapped[List["ClassroomSubjects"]] = relationship(
+        back_populates="classroom",
+        lazy="joined",
     )
 
     def __str__(self):
