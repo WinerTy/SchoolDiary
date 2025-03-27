@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 class School(BaseModel, PkIntMixin):
     director_id: Mapped[int] = mapped_column(
-        ForeignKey("users.id", ondelete="cascade"), nullable=False
+        ForeignKey("users.id", ondelete="cascade"), nullable=False, unique=True
     )
 
     school_name: Mapped[str] = mapped_column(String(128), nullable=False)
@@ -38,6 +38,7 @@ class School(BaseModel, PkIntMixin):
         "SchoolSubject",
         back_populates="school",
         foreign_keys="[SchoolSubject.school_id]",
+        lazy="joined",
     )
 
     def __str__(self):
