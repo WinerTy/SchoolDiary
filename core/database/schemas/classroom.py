@@ -10,6 +10,10 @@ class BaseClassroom(BaseModel):
     pass
 
 
+class SchoolSubjectSchema(BaseModel):
+    school_id: int
+
+
 class CreateClassroom(BaseClassroom):
     pass
 

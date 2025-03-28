@@ -2,12 +2,12 @@ from abc import ABC
 from typing import TypeVar, Generic, Optional, List, Dict, Any
 
 from core.database.crud.base.repository import BaseRepository
-from core.types import Model, CreateSchema, ReadSchema, ResponseSchema
+from core.types import Model, CreateSchema, ReadSchema, UpdateSchema
 
 RepositoryType = TypeVar("RepositoryType", bound=BaseRepository[Any, Any, Any, Any])
 
 
-class BaseService(Generic[Model, CreateSchema, ReadSchema, ResponseSchema], ABC):
+class BaseService(Generic[Model, CreateSchema, ReadSchema, UpdateSchema], ABC):
     def __init__(
         self,
         repositories: Dict[str, RepositoryType],

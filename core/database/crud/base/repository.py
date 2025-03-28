@@ -37,12 +37,6 @@ class BaseRepository(Generic[Model, CreateSchema, ReadSchema, UpdateSchema]):
         return result.scalars().all()
 
     async def create(self, item: CreateSchema, **kwargs) -> Model:
-        """
-        Создает объект в базе данных.
-        :param item: Данные для создания (только Pydantic схема).
-        :param kwargs: Дополнительные параметры.
-        :return: Созданный объект.
-        """
         try:
             data = item.model_dump()
             data.update(kwargs)

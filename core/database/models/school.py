@@ -11,11 +11,12 @@ from core.database.mixins import PkIntMixin
 if TYPE_CHECKING:
     from .user import User
     from .classroom import Classroom
+    from .school_subject import SchoolSubject
 
 
 class School(BaseModel, PkIntMixin):
     director_id: Mapped[int] = mapped_column(
-        ForeignKey("users.id", ondelete="cascade"), nullable=False
+        ForeignKey("users.id", ondelete="cascade"), nullable=False, unique=True
     )
 
     school_name: Mapped[str] = mapped_column(String(128), nullable=False)
@@ -27,10 +28,20 @@ class School(BaseModel, PkIntMixin):
     director: Mapped["User"] = relationship("User", foreign_keys=[director_id])
 
     teachers: Mapped[List["User"]] = relationship(
-        "User", back_populates="school", foreign_keys="[User.school_id]"
+        "User", back_populates="school", foreign_keys="[User.school_id]", lazy="joined"
     )
     classrooms: Mapped[List["Classroom"]] = relationship(
-        "Classroom", back_populates="school", foreign_keys="[Classroom.school_id]"
+        "Classroom",
+        back_populates="school",
+        foreign_keys="[Classroom.school_id]",
+        lazy="joined",
+    )
+
+    school_subject: Mapped[List["SchoolSubject"]] = relationship(
+        "SchoolSubject",
+        back_populates="school",
+        foreign_keys="[SchoolSubject.school_id]",
+        lazy="joined",
     )
 
     def __str__(self):
