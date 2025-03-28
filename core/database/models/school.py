@@ -28,10 +28,13 @@ class School(BaseModel, PkIntMixin):
     director: Mapped["User"] = relationship("User", foreign_keys=[director_id])
 
     teachers: Mapped[List["User"]] = relationship(
-        "User", back_populates="school", foreign_keys="[User.school_id]"
+        "User", back_populates="school", foreign_keys="[User.school_id]", lazy="joined"
     )
     classrooms: Mapped[List["Classroom"]] = relationship(
-        "Classroom", back_populates="school", foreign_keys="[Classroom.school_id]"
+        "Classroom",
+        back_populates="school",
+        foreign_keys="[Classroom.school_id]",
+        lazy="joined",
     )
 
     school_subject: Mapped[List["SchoolSubject"]] = relationship(

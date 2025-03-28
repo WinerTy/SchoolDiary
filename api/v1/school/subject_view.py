@@ -3,6 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 
 from api.dependencies.services.get_service import get_school_subject_service
+from api.v1.auth.fastapi_users import current_active_teacher_user_or_admin_user
 from core.database.crud.school_subject import (
     SchoolSubjectCreate,
     SchoolSubjectCreateRequest,
@@ -16,7 +17,11 @@ router: APIRouter = APIRouter(
 )
 
 
-@router.post("/{school_id}", response_model=SchoolSubjectRead)
+@router.post(
+    "/{school_id}",
+    response_model=SchoolSubjectRead,
+    dependencies=[Depends(current_active_teacher_user_or_admin_user)],
+)
 async def create_subject_for_school(
     school_id: int,
     subject_data: SchoolSubjectCreateRequest,
