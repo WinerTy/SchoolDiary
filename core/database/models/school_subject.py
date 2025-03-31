@@ -9,7 +9,7 @@ from core.database.mixins import PkIntMixin
 if TYPE_CHECKING:
     from .school import School
     from .classroom_subjects import ClassroomSubjects
-
+    from .lesson import Lesson
 
 class SchoolSubject(BaseModel, PkIntMixin):
     school_id: Mapped[int] = mapped_column(ForeignKey("school.id"), nullable=False)
@@ -20,7 +20,9 @@ class SchoolSubject(BaseModel, PkIntMixin):
     classrooms: Mapped[List["ClassroomSubjects"]] = relationship(
         back_populates="subject"
     )
-
+    lessons: Mapped[List["Lesson"]] = relationship(
+        "Lesson", back_populates="school_subjects"
+    )
     __table_args__ = (
         UniqueConstraint("school_id", "subject_name", name="unique_school_subject"),
     )

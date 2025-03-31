@@ -2,7 +2,6 @@ from datetime import date
 from typing import Annotated, TYPE_CHECKING, Optional
 
 from fastapi import APIRouter, Depends
-from fastapi_pagination import paginate, Page
 
 from api.dependencies.repository import (
     get_school_repository,
@@ -18,7 +17,7 @@ from core.database.schemas import SuccessResponse
 from core.database.schemas.lesson import MultiCreateLessons
 from core.database.schemas.schedule import ReadSchedule
 from core.database.schemas.school import CreateSchool, ReadSchool
-from core.database.schemas.subject import ReadSubject, CreateSubjects
+from core.database.schemas.subject import CreateSubjects
 from core.services.school_service import SchoolService
 
 if TYPE_CHECKING:
@@ -69,14 +68,6 @@ async def create_subject(
         status=201,
         count_records=len(result),
     )
-
-
-@router.get("/subject/", response_model=Page[ReadSubject])
-async def get_subjects(
-    repo: Annotated["SubjectRepository", Depends(get_subject_repository)],
-):
-    result = await repo.get_all()
-    return paginate(result)
 
 
 @router.post(
