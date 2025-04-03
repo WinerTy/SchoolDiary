@@ -55,7 +55,7 @@ class User(BaseModel, PkIntMixin, SQLAlchemyBaseUserTable[int]):
 
     @property
     def full_name(self):
-        return f"{self.first_name} {self.last_name}"
+        return f"{self.first_name} {self.middle_name if self.middle_name else ''} {self.last_name}"
 
     @classmethod
     def get_db(cls, session: "AsyncSession"):

@@ -11,7 +11,6 @@ class UserAdmin(ModelView):
         "first_name",
         "middle_name",
         "last_name",
-        "teacher_info",
         "role",
     ]
     fields = [
@@ -21,7 +20,6 @@ class UserAdmin(ModelView):
         "last_name",
         "role",
         "classroom",
-        "teacher_info",
     ]
 
     column_details_list = [
