@@ -9,7 +9,7 @@ from core.database.models.choices import ChoicesApplicationStatus
 if TYPE_CHECKING:
     from core.database import Applications
 
-
+# TODO
 class ApplicationValidator(BaseValidator):
     def validate(self, instance: "Applications", **kwargs) -> None:
         user_id = kwargs.get("user_id")

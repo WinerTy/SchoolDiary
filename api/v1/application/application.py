@@ -23,7 +23,7 @@ router = APIRouter(
 )
 
 
-@router.post("/create/", response_model=ReadApplication, status_code=201)
+@router.post("/create/", response_model=ReadApplication, status_code=201, description="Создание заявки на создание школы")
 async def create_application(
     create_data: CreateApplication,
     user: Annotated[User, Depends(current_active_user)],
