@@ -41,7 +41,7 @@ class AuthSettings(BaseModel):
 
 class ServerSettings(BaseModel):
     host: str = "127.0.0.1"
-    port: int = 8001        
+    port: int = 8001      
     debug: bool = True
 
 

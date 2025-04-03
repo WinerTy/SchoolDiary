@@ -2,7 +2,8 @@ from typing import TYPE_CHECKING, List
 
 from sqlalchemy import ForeignKey, Time, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-
+from jinja2 import Template
+from fastapi import Request
 from core.database import BaseModel
 from core.database.mixins import PkIntMixin
 
@@ -46,3 +47,13 @@ class Lesson(BaseModel, PkIntMixin):
 
     def __str__(self):
         return self.subject.subject_name
+
+    async def __admin_repr__(self, request: Request) -> str:
+        return self.subject.subject_name
+
+    async def __admin_select2_repr__(self, request: Request) -> str:
+        template = Template(
+            """<span>{{ subject_name }}</span>""",
+            autoescape=True,
+        )
+        return template.render(subject_name=self.subject.subject_name)

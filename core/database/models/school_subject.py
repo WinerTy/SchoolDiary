@@ -1,5 +1,7 @@
 from typing import TYPE_CHECKING, List
 
+from fastapi import Request
+from jinja2 import Template
 from sqlalchemy import ForeignKey, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -11,7 +13,7 @@ if TYPE_CHECKING:
     from .classroom_subjects import ClassroomSubjects
     from .lesson import Lesson
 
-class SchoolSubject(BaseModel, PkIntMixin):
+class SchoolSubject(BaseModel, PkIntMixin): 
     school_id: Mapped[int] = mapped_column(ForeignKey("school.id"), nullable=False)
     school: Mapped["School"] = relationship("School", back_populates="school_subject")
 
@@ -29,3 +31,13 @@ class SchoolSubject(BaseModel, PkIntMixin):
 
     def __str__(self) -> str:
         return self.subject_name
+
+    async def __admin_repr__(self, request: Request) -> str:
+        return self.subject_name
+    
+    async def __admin_select2_repr__(self, request: Request) -> str:
+        template = Template(
+            """<span>Школа: {{ school_name }}, {{ subject_name }}</span>""",
+            autoescape=True,
+        )
+        return template.render(subject_name=self.subject_name, school_name=self.school.school_name)
