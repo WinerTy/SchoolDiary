@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from .subject import Subject
     from .schedule import Schedule
     from .grade import Grade
-
+    from .school_subject import SchoolSubject
 
 class Lesson(BaseModel, PkIntMixin):
     __tablename__ = "lessons"
@@ -21,6 +21,10 @@ class Lesson(BaseModel, PkIntMixin):
     subject_id: Mapped[int] = mapped_column(
         ForeignKey("subjects.id", ondelete="cascade"), nullable=False
     )
+
+    school_subject_id: Mapped[int] = mapped_column(
+        ForeignKey("school_subject.id", ondelete="CASCADE"), nullable=False
+    )
     teacher_id: Mapped[int] = mapped_column(
         ForeignKey("users.id", ondelete="cascade"), nullable=False
     )
@@ -28,6 +32,9 @@ class Lesson(BaseModel, PkIntMixin):
     end_time: Mapped[Time] = mapped_column(Time, nullable=False)
     additional_info: Mapped[str] = mapped_column(Text, nullable=True)
 
+    school_subjects: Mapped["SchoolSubject"] = relationship(
+        "SchoolSubject", back_populates="lessons"
+    )
     subject: Mapped["Subject"] = relationship(
         "Subject", back_populates="lessons", lazy="joined"
     )

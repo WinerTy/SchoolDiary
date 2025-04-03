@@ -24,12 +24,15 @@ class BaseRepository(Generic[Model, CreateSchema, ReadSchema, UpdateSchema]):
             )
 
     async def get_by_id(
-        self, item_id: Any, error_message: Optional[str] = "Item not found"
+        self,
+        item_id: Any,
+        error_message: Optional[str] = "Item not found",
+        raise_ex: bool = True,
     ) -> Model:
         stmt = select(self.model).where(getattr(self.model, self.pk_field) == item_id)
         result = await self.db.execute(stmt)
         instance = result.scalars().first()
-        if not instance:
+        if not instance and raise_ex:
             raise HTTPException(status_code=404, detail=error_message)
         return instance
 
@@ -38,12 +41,6 @@ class BaseRepository(Generic[Model, CreateSchema, ReadSchema, UpdateSchema]):
         return result.scalars().all()
 
     async def create(self, item: CreateSchema, **kwargs) -> Model:
-        """
-        Создает объект в базе данных.
-        :param item: Данные для создания (только Pydantic схема).
-        :param kwargs: Дополнительные параметры.
-        :return: Созданный объект.
-        """
         try:
             data = item.model_dump()
             data.update(kwargs)

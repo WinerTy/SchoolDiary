@@ -2,7 +2,10 @@ from typing import TYPE_CHECKING, Annotated
 
 from fastapi import APIRouter, Depends
 
-from api.dependencies.services.get_service import get_invitation_service
+from api.dependencies.services.get_service import (
+    get_invitation_service,
+    get_user_service,
+)
 from api.v1.auth.fastapi_users import (
     current_active_teacher_user_or_admin_user,
     current_active_user,
@@ -11,7 +14,10 @@ from core.database.crud.invitation.schemas import (
     CreateInviteResponse,
     ReadInvite,
 )
+from core.database.crud.user import UserRead
+from core.database.crud.user.schemas import UserUpdateRequest
 from core.database.schemas import SuccessResponse
+from core.services import UserService
 
 if TYPE_CHECKING:
     from core.services.invitation_service import InvitationService
@@ -61,3 +67,19 @@ async def delete_invite(
 ):
     result = await service.delete_invite(invite_id=invite_id, user=user)
     return result
+
+
+@router.get("/me/", response_model=UserRead)
+async def read_me(
+    user: Annotated["User", Depends(current_active_user)],
+):
+    return user
+
+
+@router.patch("/me/", response_model=UserRead)
+async def update_me(
+    user: Annotated["User", Depends(current_active_user)],
+    service: Annotated["UserService", Depends(get_user_service)],
+    update_data: UserUpdateRequest,
+):
+    return await service.update_user(user_id=user.id, update_data=update_data)

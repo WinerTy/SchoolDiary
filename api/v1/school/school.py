@@ -2,21 +2,22 @@ from datetime import date
 from typing import Annotated, TYPE_CHECKING, Optional
 
 from fastapi import APIRouter, Depends
-from fastapi_pagination import paginate, Page
 
 from api.dependencies.repository import (
     get_school_repository,
     get_subject_repository,
     get_lesson_repository,
+    get_classroom_repository,
 )
 from api.dependencies.services.get_service import get_school_service
 from api.v1.auth.fastapi_users import current_active_teacher_user_or_admin_user
 from api.v1.auth.fastapi_users import current_active_user
+from core.database.crud import ClassroomRepository
 from core.database.schemas import SuccessResponse
 from core.database.schemas.lesson import MultiCreateLessons
 from core.database.schemas.schedule import ReadSchedule
 from core.database.schemas.school import CreateSchool, ReadSchool
-from core.database.schemas.subject import ReadSubject, CreateSubjects
+from core.database.schemas.subject import CreateSubjects
 from core.services.school_service import SchoolService
 
 if TYPE_CHECKING:
@@ -69,14 +70,6 @@ async def create_subject(
     )
 
 
-@router.get("/subject/", response_model=Page[ReadSubject])
-async def get_subjects(
-    repo: Annotated["SubjectRepository", Depends(get_subject_repository)],
-):
-    result = await repo.get_all()
-    return paginate(result)
-
-
 @router.post(
     "/lesson/",
     response_model=SuccessResponse,
@@ -119,3 +112,13 @@ async def get_school_schedule(
 ):
     result = await service.get_schedule_for_school(school_id, schedule_date)
     return result
+
+
+@router.get("/test/{classroom_id}")
+async def get_test(
+    classroom_id: int,
+    repo: Annotated["ClassroomRepository", Depends(get_classroom_repository)],
+):
+    res = await repo.get_by_id(classroom_id)
+    print(res.subjects)
+    return res
