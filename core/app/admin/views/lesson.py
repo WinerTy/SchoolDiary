@@ -14,4 +14,5 @@ class LessonAdmin(ModelView):
         "end_time",
         "additional_info",
         "schedule",
+        "school_subjects",
     ]

@@ -16,17 +16,14 @@ class SchoolRepository(BaseRepository[School, CreateSchool, ReadSchool, UpdateSc
 
     async def get_school_teachers(self, school_id: int) -> ReadSchool:
         school = await self.get_by_id(school_id)
-
-        if school:
-            await self.db.refresh(school, attribute_names=["teachers"])
-            return school
+        return school
 
     async def create_school(self, data: CreateSchool, director_id: int):
-        school = await self.get_by_id(director_id)
+        school = await self.get_by_id(director_id, raise_ex=False)
         if school:
             raise HTTPException(status_code=400, detail="School already exists")
 
-        created_school = self.create(data, director_id=director_id)
+        created_school = await self.create(data, director_id=director_id)
         return created_school
 
     async def add_teacher_to_school(self, school_id: int):

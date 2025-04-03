@@ -28,7 +28,7 @@ class SchoolService(BaseService[School, CreateSchool, ReadSchool, ReadSchool]):
             }
         )
 
-    async def validate_param(self, school_id: int, classroom_id: int) -> bool:
+    async def _validate_param(self, school_id: int, classroom_id: int) -> bool:
         classroom_repo = self.get_repo("classroom")
         classroom = await classroom_repo.get_by_id(classroom_id)
 
@@ -43,7 +43,7 @@ class SchoolService(BaseService[School, CreateSchool, ReadSchool, ReadSchool]):
     async def get_schedule_for_class(
         self, school_id: int, classroom_id: int, schedule_date: Optional[date] = None
     ):
-        is_verify = await self.validate_param(school_id, classroom_id)
+        is_verify = await self._validate_param(school_id, classroom_id)
 
         if is_verify:
             schedule_repo = self.get_repo("schedule")

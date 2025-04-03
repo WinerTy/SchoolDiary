@@ -1,10 +1,11 @@
-from typing import Generic, Type, Any, Optional, Union
+from typing import Generic, Type, Any, Optional, Union, Dict
 
 from fastapi.exceptions import HTTPException
 from sqlalchemy import select, inspect, delete
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from datetime import datetime
 from core.types import Model, CreateSchema, ReadSchema, UpdateSchema
 
 
@@ -23,12 +24,15 @@ class BaseRepository(Generic[Model, CreateSchema, ReadSchema, UpdateSchema]):
             )
 
     async def get_by_id(
-        self, item_id: Any, error_message: Optional[str] = "Item not found"
+        self,
+        item_id: Any,
+        error_message: Optional[str] = "Item not found",
+        raise_ex: bool = True,
     ) -> Model:
         stmt = select(self.model).where(getattr(self.model, self.pk_field) == item_id)
         result = await self.db.execute(stmt)
         instance = result.scalars().first()
-        if not instance:
+        if not instance and raise_ex:
             raise HTTPException(status_code=404, detail=error_message)
         return instance
 
@@ -37,12 +41,6 @@ class BaseRepository(Generic[Model, CreateSchema, ReadSchema, UpdateSchema]):
         return result.scalars().all()
 
     async def create(self, item: CreateSchema, **kwargs) -> Model:
-        """
-        Создает объект в базе данных.
-        :param item: Данные для создания (только Pydantic схема).
-        :param kwargs: Дополнительные параметры.
-        :return: Созданный объект.
-        """
         try:
             data = item.model_dump()
             data.update(kwargs)
@@ -123,3 +121,20 @@ class BaseRepository(Generic[Model, CreateSchema, ReadSchema, UpdateSchema]):
         except Exception as e:
             await self.db.rollback()
             raise HTTPException(status_code=500, detail=str(e))
+
+    async def get_with_filter(self, filter_fields: Dict[str, Union[str, int, float, datetime]]):
+        try:
+            for field_name, field_value in filter_fields.items():
+                if not hasattr(self.model, field_name):
+                    raise AttributeError(f"{self.model.__name__} has no attribute {field_name}")
+                
+                stmp = select(self.model)
+                
+                if field_value is not None:
+                   stmp = stmp.where(getattr(self.model, field_name) == field_value)
+
+                result = await self.db.execute(stmp)
+                return result
+            
+        except AttributeError:
+            raise HTTPException("No has attribute",status_code=500)
