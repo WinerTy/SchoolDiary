@@ -25,7 +25,7 @@ class RedisSettings(BaseModel):
 
 
 class ApiAuth(BaseModel):
-    token_url: str = "/auth/token"
+    token_url: str = "api/auth/login"
 
 
 class ApiSettings(BaseModel):
@@ -41,12 +41,12 @@ class AuthSettings(BaseModel):
 
 class ServerSettings(BaseModel):
     host: str = "127.0.0.1"
-    port: int = 8000
+    port: int = 8001        
     debug: bool = True
 
 
 class DataBaseSettings(BaseModel):
-    url: PostgresDsn
+    url: str
     echo: bool = False
     echo_pool: bool = False
     max_overflow: int = 10

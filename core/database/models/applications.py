@@ -27,3 +27,14 @@ class Applications(BaseModel, PkIntMixin, TimestampMixin):
     user_id: Mapped[int] = mapped_column(
         ForeignKey("users.id", ondelete="cascade"), nullable=False
     )
+
+    def __str__(self) -> str:
+        return f"Заявка №{self.id}"
+    
+    
+    @property
+    def to_dict(self):
+        return {
+            "FIO": self.director_full_name,
+            "school": self.school_name
+        }
