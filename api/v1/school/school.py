@@ -5,7 +5,6 @@ from fastapi import APIRouter, Depends
 
 from api.dependencies.repository import (
     get_school_repository,
-    get_subject_repository,
     get_lesson_repository,
     get_classroom_repository,
 )
@@ -17,11 +16,9 @@ from core.database.schemas import SuccessResponse
 from core.database.schemas.lesson import MultiCreateLessons
 from core.database.schemas.schedule import ReadSchedule
 from core.database.schemas.school import CreateSchool, ReadSchool
-from core.database.schemas.subject import CreateSubjects
 from core.services.school_service import SchoolService
 
 if TYPE_CHECKING:
-    from core.database.crud import SubjectRepository
     from core.database.crud import SchoolRepository
     from core.database.crud import LessonRepository
     from core.database import User
@@ -50,24 +47,6 @@ async def get_school_teachers(
 ):
     result = await repo.get_school_teachers(school_id)
     return result
-
-
-@router.post(
-    "/subject/",
-    dependencies=[Depends(current_active_teacher_user_or_admin_user)],
-    response_model=SuccessResponse,
-    status_code=201,
-)
-async def create_subject(
-    subject_data: CreateSubjects,
-    repo: Annotated["SubjectRepository", Depends(get_subject_repository)],
-):
-    result = await repo.create_subjects(subject_data.subjects)
-    return SuccessResponse(
-        detail="Subjects created successfully",
-        status=201,
-        count_records=len(result),
-    )
 
 
 @router.post(

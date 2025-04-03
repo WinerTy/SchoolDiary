@@ -8,7 +8,6 @@ class LessonAdmin(ModelView):
     column_visibility = []
 
     fields = [
-        "subject",
         "teacher",
         "start_time",
         "end_time",

@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Generic, Type, Any, Optional, Union, Dict
 
 from fastapi.exceptions import HTTPException
@@ -5,7 +6,6 @@ from sqlalchemy import select, inspect, delete
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from datetime import datetime
 from core.types import Model, CreateSchema, ReadSchema, UpdateSchema
 
 
@@ -122,19 +122,50 @@ class BaseRepository(Generic[Model, CreateSchema, ReadSchema, UpdateSchema]):
             await self.db.rollback()
             raise HTTPException(status_code=500, detail=str(e))
 
-    async def get_with_filter(self, filter_fields: Dict[str, Union[str, int, float, datetime]]):
+    async def get_with_filter(
+        self,
+        filter_fields: Dict[str, Union[str, int, float, datetime, None]],
+        raise_ex: bool = True,
+        error_message: Optional[str] = "Item not found",
+        unique: bool = True,
+    ) -> Union[Model, list[Model], None]:
+        """
+        Получает объекты из базы данных с фильтрацией по указанным полям.
+
+        :param filter_fields: Словарь с полями и значениями для фильтрации
+        :param raise_ex: Вызывать исключение, если объект не найден
+        :param error_message: Сообщение об ошибке, если объект не найден
+        :param unique: Применять ли unique() для результатов (нужно для JOIN запросов)
+        :return: Один объект или список объектов, либо None
+        """
         try:
+            stmt = select(self.model)
+
+            # Применяем все фильтры
             for field_name, field_value in filter_fields.items():
                 if not hasattr(self.model, field_name):
-                    raise AttributeError(f"{self.model.__name__} has no attribute {field_name}")
-                
-                stmp = select(self.model)
-                
-                if field_value is not None:
-                   stmp = stmp.where(getattr(self.model, field_name) == field_value)
+                    raise AttributeError(
+                        f"{self.model.__name__} has no attribute {field_name}"
+                    )
 
-                result = await self.db.execute(stmp)
-                return result
-            
-        except AttributeError:
-            raise HTTPException("No has attribute",status_code=500)
+                if field_value is not None:
+                    stmt = stmt.where(getattr(self.model, field_name) == field_value)
+
+            result = await self.db.execute(stmt)
+
+            # Используем unique() если требуется и если есть JOIN-загрузки
+            scalars = result.unique().scalars() if unique else result.scalars()
+
+            instances = scalars.all()
+
+            if not instances:
+                if raise_ex:
+                    raise HTTPException(status_code=404, detail=error_message)
+                return None
+
+            return instances[0] if len(instances) == 1 else instances
+
+        except HTTPException:
+            raise  # Пробрасываем HTTPException как есть
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))

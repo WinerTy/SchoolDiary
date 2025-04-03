@@ -19,7 +19,9 @@ class SchoolRepository(BaseRepository[School, CreateSchool, ReadSchool, UpdateSc
         return school
 
     async def create_school(self, data: CreateSchool, director_id: int):
-        school = await self.get_by_id(director_id, raise_ex=False)
+        school = await self.get_with_filter(
+            {"director_id": director_id}, raise_ex=False
+        )
         if school:
             raise HTTPException(status_code=400, detail="School already exists")
 

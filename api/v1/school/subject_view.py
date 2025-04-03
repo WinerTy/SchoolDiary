@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, TYPE_CHECKING
 
 from fastapi import APIRouter, Depends
 
@@ -9,7 +9,9 @@ from core.database.crud.school_subject import (
     SchoolSubjectCreateRequest,
     SchoolSubjectRead,
 )
-from core.services.school_subject_service import SchoolSubjectService
+
+if TYPE_CHECKING:
+    from core.services.school_subject_service import SchoolSubjectService
 
 router: APIRouter = APIRouter(
     prefix="/subject",

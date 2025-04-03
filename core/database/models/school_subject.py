@@ -13,8 +13,11 @@ if TYPE_CHECKING:
     from .classroom_subjects import ClassroomSubjects
     from .lesson import Lesson
 
-class SchoolSubject(BaseModel, PkIntMixin): 
-    school_id: Mapped[int] = mapped_column(ForeignKey("school.id"), nullable=False)
+
+class SchoolSubject(BaseModel, PkIntMixin):
+    school_id: Mapped[int] = mapped_column(
+        ForeignKey("school.id", ondelete="cascade"), nullable=False
+    )
     school: Mapped["School"] = relationship("School", back_populates="school_subject")
 
     subject_name: Mapped[str] = mapped_column(String(128), nullable=False)
@@ -34,10 +37,12 @@ class SchoolSubject(BaseModel, PkIntMixin):
 
     async def __admin_repr__(self, request: Request) -> str:
         return self.subject_name
-    
+
     async def __admin_select2_repr__(self, request: Request) -> str:
         template = Template(
             """<span>Школа: {{ school_name }}, {{ subject_name }}</span>""",
             autoescape=True,
         )
-        return template.render(subject_name=self.subject_name, school_name=self.school.school_name)
+        return template.render(
+            subject_name=self.subject_name, school_name=self.school.school_name
+        )

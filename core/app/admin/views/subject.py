@@ -7,4 +7,6 @@ class SubjectAdmin(ModelView):
 
     column_visibility = ["id", "subject_name"]
 
-    fields = ["subject_name", "lessons"]
+    fields = [
+        "subject_name",
+    ]

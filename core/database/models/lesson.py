@@ -1,26 +1,24 @@
 from typing import TYPE_CHECKING, List
 
+from fastapi import Request
+from jinja2 import Template
 from sqlalchemy import ForeignKey, Time, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from jinja2 import Template
-from fastapi import Request
+
 from core.database import BaseModel
 from core.database.mixins import PkIntMixin
 
 if TYPE_CHECKING:
     from .user import User
-    from .subject import Subject
     from .schedule import Schedule
     from .grade import Grade
     from .school_subject import SchoolSubject
+
 
 class Lesson(BaseModel, PkIntMixin):
     __tablename__ = "lessons"
     schedule_id: Mapped[int] = mapped_column(
         ForeignKey("schedules.id", ondelete="CASCADE"), nullable=False
-    )
-    subject_id: Mapped[int] = mapped_column(
-        ForeignKey("subjects.id", ondelete="cascade"), nullable=False
     )
 
     school_subject_id: Mapped[int] = mapped_column(
@@ -36,9 +34,7 @@ class Lesson(BaseModel, PkIntMixin):
     school_subjects: Mapped["SchoolSubject"] = relationship(
         "SchoolSubject", back_populates="lessons"
     )
-    subject: Mapped["Subject"] = relationship(
-        "Subject", back_populates="lessons", lazy="joined"
-    )
+
     teacher: Mapped["User"] = relationship(
         "User", back_populates="lessons", foreign_keys=[teacher_id]
     )
@@ -46,14 +42,14 @@ class Lesson(BaseModel, PkIntMixin):
     grades: Mapped[List["Grade"]] = relationship("Grade", back_populates="lesson")
 
     def __str__(self):
-        return self.subject.subject_name
+        return self.school_subjects.subject_name
 
     async def __admin_repr__(self, request: Request) -> str:
-        return self.subject.subject_name
+        return self.school_subjects.subject_name
 
     async def __admin_select2_repr__(self, request: Request) -> str:
         template = Template(
             """<span>{{ subject_name }}</span>""",
             autoescape=True,
         )
-        return template.render(subject_name=self.subject.subject_name)
+        return template.render(subject_name=self.school_subjects.subject_name)

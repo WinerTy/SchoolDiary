@@ -10,7 +10,8 @@ from core.app.admin.views import (
     LessonAdmin,
     ClassroomAdmin,
     GradeAdmin,
-    ApplicationAdmin, SchoolSubjectAdmin,
+    ApplicationAdmin,
+    SchoolSubjectAdmin,
 )
 from core.database import (
     User,
@@ -21,7 +22,8 @@ from core.database import (
     Schedule,
     Lesson,
     Grade,
-    Applications, SchoolSubject,
+    Applications,
+    SchoolSubject,
 )
 from core.database.utils import db_helper
 
@@ -41,8 +43,8 @@ def create_admin_app() -> Admin:
     admin.add_view(LessonAdmin(Lesson))
     admin.add_view(ScheduleAdmin(Schedule))
     admin.add_view(SchoolAdmin(School))
+    admin.add_view(SchoolSubjectAdmin(SchoolSubject))
     admin.add_view(ClassroomAdmin(Classroom))
     admin.add_view(GradeAdmin(Grade))
     admin.add_view(ApplicationAdmin(Applications))
-    admin.add_view(SchoolSubjectAdmin(SchoolSubject))
     return admin

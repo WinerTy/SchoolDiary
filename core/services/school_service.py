@@ -13,7 +13,6 @@ class SchoolService(BaseService[School, CreateSchool, ReadSchool, ReadSchool]):
     def __init__(
         self,
         school_repo: BaseRepository,
-        subject_repo: BaseRepository,
         lesson_repo: BaseRepository,
         schedule_repo: BaseRepository,
         classroom_repo: BaseRepository,
@@ -21,7 +20,6 @@ class SchoolService(BaseService[School, CreateSchool, ReadSchool, ReadSchool]):
         super().__init__(
             repositories={
                 "school": school_repo,
-                "subject": subject_repo,
                 "lesson": lesson_repo,
                 "schedule": schedule_repo,
                 "classroom": classroom_repo,
