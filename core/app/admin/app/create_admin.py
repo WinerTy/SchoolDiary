@@ -33,8 +33,6 @@ def create_admin_app() -> Admin:
     )
 
     admin.add_view(UserAdmin(User))
-    # admin.add_view(SubjectAdmin(Subject, pydantic_model=SubjectAdminSchema))
-    # admin.add_view(TeacherInfoAdmin(Teacher))
     admin.add_view(ApplicationAdmin(Applications))
     admin.add_view(SchoolAdmin(School))
     admin.add_view(SchoolSubjectAdmin(SchoolSubject))

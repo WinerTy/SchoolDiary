@@ -12,7 +12,6 @@ from .base import BaseModel
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
-    from .teacher import Teacher
     from .school import School
     from .classroom import Classroom
     from .lesson import Lesson
@@ -46,9 +45,7 @@ class User(BaseModel, PkIntMixin, SQLAlchemyBaseUserTable[int]):
     classroom: Mapped["Classroom"] = relationship(
         "Classroom", back_populates="students", foreign_keys=[classroom_id]
     )
-    teacher_info: Mapped["Teacher"] = relationship(
-        "Teacher", back_populates="user", uselist=False
-    )
+
     lessons: Mapped[List["Lesson"]] = relationship("Lesson", back_populates="teacher")
 
     grades: Mapped[List["Grade"]] = relationship("Grade", back_populates="user")

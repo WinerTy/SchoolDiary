@@ -10,7 +10,6 @@ from core.database.crud import (
     UserRepository,
     SchoolRepository,
     InvitationRepository,
-    SubjectRepository,
     LessonRepository,
     ClassroomRepository,
 )
@@ -57,12 +56,6 @@ async def get_invitation_repository(
     validator: Annotated["BaseValidator", Depends(get_invitation_validator)],
 ):
     yield InvitationRepository(db=session, validator=validator)
-
-
-async def get_subject_repository(
-    session: Annotated["AsyncSession", Depends(db_helper.session_getter)],
-):
-    yield SubjectRepository(db=session)
 
 
 async def get_lesson_repository(

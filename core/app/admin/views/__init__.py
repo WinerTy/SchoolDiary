@@ -1,6 +1,5 @@
 __all__ = [
     "UserAdmin",
-    "SubjectAdmin",
     "TeacherInfoAdmin",
     "SchoolAdmin",
     "ClassroomAdmin",
@@ -8,7 +7,7 @@ __all__ = [
     "ScheduleAdmin",
     "GradeAdmin",
     "ApplicationAdmin",
-    "SchoolSubjectAdmin"
+    "SchoolSubjectAdmin",
 ]
 
 from .application import ApplicationAdmin
@@ -17,7 +16,6 @@ from .grade import GradeAdmin
 from .lesson import LessonAdmin
 from .schedule import ScheduleAdmin
 from .school import SchoolAdmin
-from .subject import SubjectAdmin
+from .school_subject import SchoolSubjectAdmin
 from .teacher import TeacherInfoAdmin
 from .user import UserAdmin
-from .school_subject import SchoolSubjectAdmin

@@ -6,8 +6,6 @@ __all__ = [
     "School",
     "Classroom",
     "Invitation",
-    "Teacher",
-    "Subject",
     "Schedule",
     "Lesson",
     "Grade",
@@ -26,6 +24,4 @@ from .models.lesson import Lesson
 from .models.schedule import Schedule
 from .models.school import School
 from .models.school_subject import SchoolSubject
-from .models.subject import Subject
-from .models.teacher import Teacher
 from .models.user import User
