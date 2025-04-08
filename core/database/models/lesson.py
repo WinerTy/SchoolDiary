@@ -32,13 +32,15 @@ class Lesson(BaseModel, PkIntMixin):
     additional_info: Mapped[str] = mapped_column(Text, nullable=True)
 
     school_subjects: Mapped["SchoolSubject"] = relationship(
-        "SchoolSubject", back_populates="lessons"
+        "SchoolSubject", back_populates="lessons", lazy="joined"
     )
 
     teacher: Mapped["User"] = relationship(
         "User", back_populates="lessons", foreign_keys=[teacher_id]
     )
-    schedule: Mapped["Schedule"] = relationship("Schedule", back_populates="lessons")
+    schedule: Mapped["Schedule"] = relationship(
+        "Schedule", back_populates="lessons", lazy="joined"
+    )
     grades: Mapped[List["Grade"]] = relationship("Grade", back_populates="lesson")
 
     def __str__(self):

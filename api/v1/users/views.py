@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Response, status
 
 from api.dependencies.services.get_service import (
     get_invitation_service,
@@ -33,10 +33,7 @@ async def invite_user_for_group(
     service: Annotated["InvitationService", Depends(get_invitation_service)],
 ):
     await service.create_invite(invite_data=invite_data, invited_by=user)
-    return SuccessResponse(
-        detail="Приглашение отправлено на электронную почту пользователя, срок действия приглашения 3 дня",
-        status=200,
-    )
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @router.get("/invite/accept/{token}")

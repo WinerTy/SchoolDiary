@@ -51,7 +51,7 @@ class Classroom(BaseModel, PkIntMixin):
     )
 
     def __str__(self):
-        return f"{self.class_name} - {self.year_of_graduation}"
+        return f"{self.class_name}"
 
     async def __admin_repr__(self, request: Request) -> str:
         return self.class_name

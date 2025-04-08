@@ -8,3 +8,7 @@ class ScheduleAdmin(ModelView):
     column_visibility = ["id", "classroom", "schedule_date"]
 
     fields = ["classroom", "schedule_date", "lessons"]
+
+    exclude_fields_from_list = ["lessons"]
+
+    exclude_fields_from_create = ["lessons"]
