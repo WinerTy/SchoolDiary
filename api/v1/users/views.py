@@ -7,7 +7,7 @@ from api.dependencies.services.get_service import (
     get_user_service,
 )
 from api.v1.auth.fastapi_users import (
-    current_active_teacher_user_or_admin_user,
+    current_active_teacher_or_admin_in_school,
     current_active_user,
 )
 from core.database.crud.invitation.schemas import (
@@ -29,7 +29,7 @@ router = APIRouter(prefix="/users", tags=["Users"])
 @router.post("/invite/", response_model=SuccessResponse)
 async def invite_user_for_group(
     invite_data: CreateInviteResponse,
-    user: Annotated["User", Depends(current_active_teacher_user_or_admin_user)],
+    user: Annotated["User", Depends(current_active_teacher_or_admin_in_school)],
     service: Annotated["InvitationService", Depends(get_invitation_service)],
 ):
     await service.create_invite(invite_data=invite_data, invited_by=user)

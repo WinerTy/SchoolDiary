@@ -9,7 +9,7 @@ from api.dependencies.repository import (
     get_classroom_repository,
 )
 from api.dependencies.services.get_service import get_school_service
-from api.v1.auth.fastapi_users import current_active_teacher_user_or_admin_user
+from api.v1.auth.fastapi_users import current_active_teacher_or_admin_in_school
 from api.v1.auth.fastapi_users import current_active_user
 from core.database.crud import ClassroomRepository
 from core.database.schemas import SuccessResponse
@@ -53,7 +53,7 @@ async def create_school(
     "/lesson/",
     response_model=SuccessResponse,
     status_code=201,
-    dependencies=[Depends(current_active_teacher_user_or_admin_user)],
+    dependencies=[Depends(current_active_teacher_or_admin_in_school)],
 )
 async def create_lessons(
     lesson_data: MultiCreateLessons,

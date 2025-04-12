@@ -4,7 +4,9 @@ from starlette import status
 
 from api.dependencies.auth import authentication_backend
 from api.dependencies.auth import get_user_manager
+from api.dependencies.repository import get_school_repository
 from core.database import User
+from core.database.crud import SchoolRepository
 from core.database.models.choices import ChoicesRole
 
 fastapi_users = FastAPIUsers[User, int](
@@ -28,12 +30,48 @@ async def current_active_student_user(
     return user
 
 
-async def current_active_teacher_user_or_admin_user(
+async def current_active_teacher_or_admin_in_school(
+    school_id: int,
     user: User = Depends(current_active_user),
+    school_repo: SchoolRepository = Depends(get_school_repository),
 ) -> User:
-    if user.role != ChoicesRole.teacher and user.role != ChoicesRole.platform_admin:
+    """
+    Проверяет, является ли пользователь учителем или администратором в указанной школе.
+
+    Args:
+        school_id: ID школы для проверки
+        user: Текущий авторизованный пользователь
+        school_repo: Репозиторий для работы со школами
+
+    Returns:
+        User: Объект пользователя, если проверка пройдена
+
+    Raises:
+        HTTPException: 403 если пользователь не имеет нужной роли или доступа
+        HTTPException: 404 если школа не найдена
+    """
+    # Быстрая проверка роли сначала
+    if user.role not in {ChoicesRole.teacher, ChoicesRole.platform_admin}:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="The user doesn't have the required role",
+            detail="User role not allowed",
         )
+
+    # Получаем школу или 404
+    school = await school_repo.get_school_or_404(school_id)
+
+    # Проверяем привилегии platform_admin (если есть доступ ко всем школам)
+    if user.role == ChoicesRole.platform_admin:
+        return user
+
+    # Проверяем, является ли пользователь директором или учителем школы
+    is_director = user.id == school.director_id
+    is_teacher = any(t.id == user.id for t in school.teachers)
+
+    if not (is_director or is_teacher):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="User is not associated with this school",
+        )
+
     return user

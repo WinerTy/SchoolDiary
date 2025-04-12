@@ -1,12 +1,13 @@
-from typing import Annotated, TYPE_CHECKING
+from typing import Annotated, TYPE_CHECKING, Union, List
 
 from fastapi import APIRouter, Depends
 
 from api.dependencies.services.get_service import get_school_subject_service
-from api.v1.auth.fastapi_users import current_active_teacher_user_or_admin_user
+from api.v1.auth.fastapi_users import (
+    current_active_teacher_or_admin_in_school,
+)
 from core.database.crud.school_subject import (
     SchoolSubjectCreate,
-    SchoolSubjectCreateRequest,
     SchoolSubjectRead,
 )
 
@@ -19,26 +20,24 @@ router: APIRouter = APIRouter(
 )
 
 
-@router.post(
-    "/{school_id}",
-    response_model=SchoolSubjectRead,
-    dependencies=[Depends(current_active_teacher_user_or_admin_user)],
-)
-async def create_subject_for_school(
-    school_id: int,
-    subject_data: SchoolSubjectCreateRequest,
-    service: Annotated["SchoolSubjectService", Depends(get_school_subject_service)],
-):
-    result = await service.create_subject(
-        SchoolSubjectCreate(school_id=school_id, subject_name=subject_data.subject_name)
-    )
-    return result
-
-
 @router.get("/{school_id}")
 async def get_school_subjects(
     school_id: int,
     service: Annotated["SchoolSubjectService", Depends(get_school_subject_service)],
 ):
     result = await service.get_subjects(school_id)
+    return result
+
+
+@router.post(
+    "/{school_id}/",
+    response_model=Union[SchoolSubjectRead, List[SchoolSubjectRead]],
+    dependencies=[Depends(current_active_teacher_or_admin_in_school)],
+    description="Универсальное создание школьных предметов, поддерживает создание одного или нескольких предметов одновременно",
+)
+async def create_new_subject(
+    create_data: Union[SchoolSubjectCreate, List[SchoolSubjectCreate]],
+    service: Annotated["SchoolSubjectService", Depends(get_school_subject_service)],
+):
+    result = await service.create_subject_v2(create_data)
     return result

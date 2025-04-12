@@ -29,6 +29,22 @@ class BaseRepository(Generic[Model, CreateSchema, ReadSchema, UpdateSchema]):
         error_message: Optional[str] = "Item not found",
         raise_ex: bool = True,
     ) -> Model:
+        """
+        Получает объект из базы данных по его идентификатору.
+
+        Args:
+            item_id: Идентификатор объекта (int, str или UUID в зависимости от модели).
+            error_message: Сообщение об ошибке, которое будет возвращено, если объект не найден.
+                По умолчанию: "Item not found".
+            raise_ex: Флаг, указывающий нужно ли вызывать исключение если объект не найден.
+                По умолчанию: True (исключение вызывается).
+
+        Returns:
+            Model: Найденный объект модели. Если объект не найден и raise_ex=False, возвращает None.
+
+        Raises:
+            HTTPException: Исключение с кодом 404, если объект не найден и raise_ex=True.
+        """
         stmt = select(self.model).where(getattr(self.model, self.pk_field) == item_id)
         result = await self.db.execute(stmt)
         instance = result.scalars().first()
@@ -89,11 +105,24 @@ class BaseRepository(Generic[Model, CreateSchema, ReadSchema, UpdateSchema]):
             await self.db.rollback()
             raise HTTPException(status_code=400, detail=str(e))
 
-    async def multiple_create(self, items: List[CreateSchema]) -> List[Model]:
+    async def multiple_create(
+        self,
+        items: List[CreateSchema],
+        integrity_error_message: str = "Item already exists",
+    ) -> List[Model]:
         """
         Создает несколько объектов в базе данных.
-        :param items: Список данных для создания (только Pydantic схемы).
-        :return: Список созданных объектов.
+        Args:
+            items: Список объектов для создания.
+            integrity_error_message: Сообщение об ошибке, которое будет возвращено, если объект уже существует.
+                По умолчанию: "Item already exists".
+
+        Returns:
+            List[Model]: Список созданных объектов.
+
+        Raises:
+            HTTPException: Исключение с кодом 400, если объект уже существует.
+            HTTPException: Исключение с кодом 500, если произошла Серверная ошибка.
         """
         if not items:
             raise HTTPException(status_code=400, detail="No items provided")
@@ -106,7 +135,7 @@ class BaseRepository(Generic[Model, CreateSchema, ReadSchema, UpdateSchema]):
             return db_items
         except IntegrityError as e:
             await self.db.rollback()
-            raise HTTPException(status_code=400, detail="Item already exists")
+            raise HTTPException(status_code=400, detail=integrity_error_message)
         except Exception as e:
             await self.db.rollback()
             raise HTTPException(status_code=500, detail=str(e))
