@@ -48,7 +48,7 @@ class LessonAdmin(ModelView):
         if schedule.count_lessons() > 8:
             raise FormValidationError({"schedule": "Расписание заполнено"})
 
-        valid, lesson = schedule.validate_new_lesson(obj)
+        valid, lesson = schedule.validate_lessons(new_lessons=obj)
         if not valid:
             raise FormValidationError(
                 {

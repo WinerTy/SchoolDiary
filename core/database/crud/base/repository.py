@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Generic, Type, Any, Optional, Union, Dict
+from typing import Generic, Type, Any, Optional, Union, Dict, List
 
 from fastapi.exceptions import HTTPException
 from sqlalchemy import select, inspect, delete
@@ -36,7 +36,7 @@ class BaseRepository(Generic[Model, CreateSchema, ReadSchema, UpdateSchema]):
             raise HTTPException(status_code=404, detail=error_message)
         return instance
 
-    async def get_all(self) -> list[Model]:
+    async def get_all(self) -> List[Model]:
         result = await self.db.execute(select(self.model))
         return result.scalars().all()
 
@@ -89,7 +89,7 @@ class BaseRepository(Generic[Model, CreateSchema, ReadSchema, UpdateSchema]):
             await self.db.rollback()
             raise HTTPException(status_code=400, detail=str(e))
 
-    async def multiple_create(self, items: list[CreateSchema]) -> list[Model]:
+    async def multiple_create(self, items: List[CreateSchema]) -> List[Model]:
         """
         Создает несколько объектов в базе данных.
         :param items: Список данных для создания (только Pydantic схемы).
@@ -128,7 +128,7 @@ class BaseRepository(Generic[Model, CreateSchema, ReadSchema, UpdateSchema]):
         raise_ex: bool = True,
         error_message: Optional[str] = "Item not found",
         unique: bool = True,
-    ) -> Union[Model, list[Model], None]:
+    ) -> Union[Model, List[Model], None]:
         """
         Получает объекты из базы данных с фильтрацией по указанным полям.
 

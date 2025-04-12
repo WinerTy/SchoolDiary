@@ -7,11 +7,12 @@ from core.database.schemas.subject import ReadSubject
 
 
 class BaseLesson(BaseModel):
-    subject_id: int
+    pass
 
 
 class CreateLesson(BaseLesson):
     schedule_id: int
+    school_subject_id: int
     teacher_id: int
     start_time: time
     end_time: time

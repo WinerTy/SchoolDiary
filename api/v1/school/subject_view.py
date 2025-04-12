@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 router: APIRouter = APIRouter(
     prefix="/subject",
-    tags=["School"],
+    tags=["School", "Subject"],
 )
 
 

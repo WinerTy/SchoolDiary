@@ -65,3 +65,12 @@ class ScheduleRepository(
 
         result = await self.db.execute(stmt)
         return result.scalars().unique().all()
+
+    # async def test_validate(self, schedule_id: int, lesson: Lesson):
+    #     schedule: Schedule = self.get_by_id(schedule_id)
+    #     valid, lesson = schedule.validate_new_lesson(lesson)
+    #     if not valid:
+    #         raise HTTPException(
+    #             status_code=400,
+    #             detail=f"Урок пересекается с другим уроком. {lesson.id}",
+    #         )

@@ -5,13 +5,15 @@ from fastapi import HTTPException
 from core.database import School
 from core.database.crud.base.repository import BaseRepository
 from core.database.schemas.school import CreateSchool, ReadSchool, UpdateSchool
+from .validator import SchoolValidator
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class SchoolRepository(BaseRepository[School, CreateSchool, ReadSchool, UpdateSchool]):
-    def __init__(self, db: "AsyncSession"):
+    def __init__(self, db: "AsyncSession", validator: "SchoolValidator"):
+        self.validator = validator
         super().__init__(School, db)
 
     async def get_school_teachers(self, school_id: int) -> ReadSchool:
@@ -30,3 +32,9 @@ class SchoolRepository(BaseRepository[School, CreateSchool, ReadSchool, UpdateSc
 
     async def add_teacher_to_school(self, school_id: int):
         pass
+
+    async def get_school_or_404(self, school_id: int) -> School:
+        school = await self.get_by_id(school_id)
+        if not school:
+            raise HTTPException(status_code=404, detail="School not found")
+        return school

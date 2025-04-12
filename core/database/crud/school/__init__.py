@@ -1,4 +1,5 @@
-__all__ = ["SchoolRepository"]
+__all__ = ["SchoolRepository", "SchoolValidator"]
 
 
 from .repository import SchoolRepository
+from .validator import SchoolValidator

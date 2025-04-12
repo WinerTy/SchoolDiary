@@ -1,5 +1,5 @@
-from datetime import date
-from typing import TYPE_CHECKING, List, Tuple, Optional
+            from datetime import date
+from typing import TYPE_CHECKING, List, Tuple, Optional, Union
 
 from fastapi import Request
 from jinja2 import Template
@@ -8,10 +8,10 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from core.database import BaseModel
 from core.database.mixins import PkIntMixin
+from .lesson import Lesson
 
 if TYPE_CHECKING:
     from .classroom import Classroom
-    from .lesson import Lesson
 
 
 class Schedule(BaseModel, PkIntMixin):
@@ -39,6 +39,38 @@ class Schedule(BaseModel, PkIntMixin):
 
     def count_lessons(self) -> int:
         return len(self.lessons)
+
+    def validate_lessons(
+        self,
+        new_lessons: Union["Lesson", List["Lesson"]],
+        existing_lessons: Optional[List["Lesson"]] = None,
+    ) -> Tuple[bool, Optional["Lesson"]]:
+        lessons_to_check = (
+            [new_lessons] if isinstance(new_lessons, Lesson) else new_lessons
+        )
+        existing = existing_lessons if existing_lessons is not None else self.lessons
+
+        for i, lesson1 in enumerate(lessons_to_check):
+            for lesson2 in lessons_to_check[i + 1 :]:
+                if self._check_time_overlap(lesson1, lesson2):
+                    return False, lesson2
+
+        for new_lesson in lessons_to_check:
+            for existing_lesson in existing:
+                if existing_lesson.id == new_lesson.id:
+                    continue
+
+                if self._check_time_overlap(new_lesson, existing_lesson):
+                    return False, existing_lesson
+
+        return True, None
+
+    @staticmethod
+    def _check_time_overlap(lesson1: "Lesson", lesson2: "Lesson") -> bool:
+        return (
+            lesson1.start_time < lesson2.end_time
+            and lesson1.end_time > lesson2.start_time
+        )
 
     def validate_new_lesson(
         self, new_lesson: "Lesson"

@@ -15,7 +15,7 @@ from core.database.crud import ClassroomRepository
 from core.database.schemas import SuccessResponse
 from core.database.schemas.lesson import MultiCreateLessons
 from core.database.schemas.schedule import ReadSchedule
-from core.database.schemas.school import CreateSchool, ReadSchool
+from core.database.schemas.school import CreateSchool
 from core.services.school_service import SchoolService
 
 if TYPE_CHECKING:
@@ -40,13 +40,13 @@ async def create_school(
     return instance
 
 
-@router.get("/{school_id}/teachers/", response_model=ReadSchool)
-async def get_school_teachers(
-    school_id: int,
-    repo: Annotated["SchoolRepository", Depends(get_school_repository)],
-):
-    result = await repo.get_school_teachers(school_id)
-    return result
+# @router.get("/{school_id}/teachers/", response_model=ReadSchool)
+# async def get_school_teachers(
+#     school_id: int,
+#     repo: Annotated["SchoolRepository", Depends(get_school_repository)],
+# ):
+#     result = await repo.get_school_teachers(school_id)
+#     return result
 
 
 @router.post(
