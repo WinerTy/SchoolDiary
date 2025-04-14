@@ -66,8 +66,11 @@ async def get_lesson_service(
         "SchoolSubjectRepository", Depends(get_school_subject_repository)
     ],
     school_repo: Annotated["SchoolRepository", Depends(get_school_repository)],
+    schedule_repo: Annotated["ScheduleRepository", Depends(get_schedule_repository)],
 ):
-    yield LessonService(lesson_repo, subject_repo, school_repo)
+    yield LessonService(
+        lesson_repo, subject_repo, school_repo, schedule_repo=schedule_repo
+    )
 
 
 async def get_user_service(

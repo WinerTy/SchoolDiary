@@ -13,6 +13,7 @@ from core.database.crud import (
     InvitationRepository,
     LessonRepository,
     ClassroomRepository,
+    ScheduleRepository,
 )
 from core.database.crud.application import ApplicationRepository
 from core.database.crud.application import ApplicationValidator
@@ -69,9 +70,8 @@ async def get_lesson_repository(
 
 async def get_schedule_repository(
     session: Annotated["AsyncSession", Depends(db_helper.session_getter)],
-    validator: Annotated["SchoolValidator", Depends(get_school_validator)],
 ):
-    yield SchoolRepository(db=session, validator=validator)
+    yield ScheduleRepository(db=session)
 
 
 async def get_classroom_repository(

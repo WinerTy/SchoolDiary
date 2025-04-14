@@ -55,3 +55,6 @@ class Lesson(BaseModel, PkIntMixin):
             autoescape=True,
         )
         return template.render(subject_name=self.school_subjects.subject_name)
+
+    def subject_name(self) -> str:
+        return self.school_subjects.subject_name

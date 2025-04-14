@@ -58,3 +58,8 @@ class LessonAdmin(ModelView):
             )
 
         await super().before_create(request, data, obj)
+
+    async def select2_result(self, obj: Any, request: Request) -> str:
+        print("Select: ", obj)
+        print("Request: ", request)
+        return super().select2_result(obj, request)

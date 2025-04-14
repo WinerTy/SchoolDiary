@@ -1,4 +1,6 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Set
+
+from sqlalchemy import select
 
 from core.database import SchoolSubject
 from core.database.crud import BaseRepository
@@ -15,3 +17,11 @@ class SchoolSubjectRepository(
 ):
     def __init__(self, db: "AsyncSession"):
         super().__init__(SchoolSubject, db)
+
+    async def get_by_ids(self, ids: Set[int]) -> Set[int]:
+        if not ids:
+            return set()
+
+        stmt = select(self.model.id).where(self.model.id.in_(ids))
+        result = await self.db.execute(stmt)
+        return {row[0] for row in result}
