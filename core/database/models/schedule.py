@@ -8,6 +8,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from core.database import BaseModel
 from core.database.mixins import PkIntMixin
+from core.database.schemas.lesson import CreateLesson
 from .lesson import Lesson
 
 if TYPE_CHECKING:
@@ -40,16 +41,36 @@ class Schedule(BaseModel, PkIntMixin):
     def count_lessons(self) -> int:
         return len(self.lessons)
 
+    # TODO поддержка для типа Lesson для подключения админки
     def validate_lessons(
         self,
-        new_lessons: Union["Lesson", List["Lesson"]],
+        new_lessons: Union["CreateLesson", List["CreateLesson"]],
         existing_lessons: Optional[List["Lesson"]] = None,
-    ) -> Tuple[bool, Optional["Lesson"]]:
+    ) -> Tuple[bool, Optional[Union["CreateLesson", "Lesson"]]]:
+        """
+        Валидирует новые уроки на предмет временных пересечений:
+        1. Между собой (новые уроки)
+        2. С существующими уроками
+
+        Args:
+            new_lessons: Один или несколько новых уроков для проверки
+            existing_lessons: Существующие уроки (если None, берутся из self.lessons)
+
+        Returns:
+            Кортеж (bool, Optional[Lesson]):
+            - True, None если валидация пройдена
+            - False, конфликтующий урок при обнаружении пересечения
+        """
+        # Нормализуем входные данные в список
         lessons_to_check = (
-            [new_lessons] if isinstance(new_lessons, Lesson) else new_lessons
+            [new_lessons] if isinstance(new_lessons, CreateLesson) else new_lessons
         )
         existing = existing_lessons if existing_lessons is not None else self.lessons
 
+        if not lessons_to_check:
+            return True, None
+
+        # Проверка пересечений между новыми уроками
         for i, lesson1 in enumerate(lessons_to_check):
             for lesson2 in lessons_to_check[i + 1 :]:
                 if self._check_time_overlap(lesson1, lesson2):
@@ -57,43 +78,31 @@ class Schedule(BaseModel, PkIntMixin):
 
         for new_lesson in lessons_to_check:
             for existing_lesson in existing:
-                if existing_lesson.id == new_lesson.id:
+                if (
+                    isinstance(new_lesson, Lesson)
+                    and isinstance(existing_lesson, Lesson)
+                    and existing_lesson.id == new_lesson.id
+                ):
                     continue
 
                 if self._check_time_overlap(new_lesson, existing_lesson):
+                    print(
+                        "Отработал",
+                        self._check_time_overlap(new_lesson, existing_lesson),
+                    )
                     return False, existing_lesson
 
         return True, None
 
     @staticmethod
-    def _check_time_overlap(lesson1: "Lesson", lesson2: "Lesson") -> bool:
+    def _check_time_overlap(
+        lesson1: Union["CreateLesson", "Lesson"],
+        lesson2: Union["CreateLesson", "Lesson"],
+    ) -> bool:
         return (
             lesson1.start_time < lesson2.end_time
             and lesson1.end_time > lesson2.start_time
         )
-
-    def validate_new_lesson(
-        self, new_lesson: "Lesson"
-    ) -> Tuple[bool, Optional["Lesson"]]:
-        """
-        Проверяет, есть ли конфликты у нового урока с существующими.
-
-        Возвращает:
-            Tuple[bool, Optional[Lesson]]:
-                - bool: True если валидация прошла, False если есть конфликты
-                - Lesson: ссылка на конфликтующий урок (если есть)
-        """
-        for lesson in self.lessons:
-            if lesson.id == new_lesson.id:
-                continue
-
-            if (
-                new_lesson.start_time < lesson.end_time
-                and new_lesson.end_time > lesson.start_time
-            ):
-                return False, lesson  # Найден конфликт
-
-        return True, None  # Конфликтов нет
 
     async def __admin_repr__(self, request: Request) -> str:
         return f"Расписание {self.classroom} - {self.convert_date()}"

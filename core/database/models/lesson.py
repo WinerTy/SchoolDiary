@@ -56,5 +56,6 @@ class Lesson(BaseModel, PkIntMixin):
         )
         return template.render(subject_name=self.school_subjects.subject_name)
 
+    @property
     def subject_name(self) -> str:
         return self.school_subjects.subject_name

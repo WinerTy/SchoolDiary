@@ -75,7 +75,7 @@ class LessonService(BaseService[Lesson, CreateLesson, ReadLesson, ReadLesson]):
         create_data: Union[CreateLesson, List[CreateLesson]],
         user: User,
     ):
-        school = await self.get_school(school_id, validate_ownership=True, user=user)
+        await self.get_school(school_id, validate_ownership=True, user=user)
 
         lesson_repo: LessonRepository = self.get_repo("lesson")
         if isinstance(create_data, list):
@@ -113,7 +113,7 @@ class LessonService(BaseService[Lesson, CreateLesson, ReadLesson, ReadLesson]):
 
         # Проверяем расписание (один раз для всех уроков)
         schedule_id = lesson_list[0].schedule_id
-        await schedule_repo.get_by_id(
+        schedule = await schedule_repo.get_by_id(
             schedule_id,
             raise_ex=True,
             error_message=f"Schedule with id {schedule_id} not found",
@@ -126,4 +126,12 @@ class LessonService(BaseService[Lesson, CreateLesson, ReadLesson, ReadLesson]):
         if missing_ids := subject_ids - existing_ids:
             raise HTTPException(
                 status_code=404, detail=f"Subjects with ids {missing_ids} not found"
+            )
+
+        is_valid, lesson = schedule.validate_lessons(new_lessons=lesson_list)
+        print("is_valid: ", is_valid)
+        if not is_valid:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Conflict with lesson {lesson.school_subject_id} at {lesson.end_time}",
             )

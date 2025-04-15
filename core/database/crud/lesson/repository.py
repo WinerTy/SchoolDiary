@@ -11,3 +11,10 @@ if TYPE_CHECKING:
 class LessonRepository(BaseRepository[Lesson, CreateLesson, ReadLesson, UpdateLesson]):
     def __init__(self, db: "AsyncSession"):
         super().__init__(Lesson, db)
+
+    @staticmethod
+    def _chck_time(lesson1: CreateLesson, lesson2: CreateLesson) -> bool:
+        return (
+            lesson1.start_time < lesson2.end_time
+            and lesson1.end_time > lesson2.start_time
+        )
