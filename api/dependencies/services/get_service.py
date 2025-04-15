@@ -11,7 +11,10 @@ from api.dependencies.repository import (
     get_schedule_repository,
     get_classroom_repository,
 )
-from api.dependencies.repository.get_repository import get_school_subject_repository
+from api.dependencies.repository.get_repository import (
+    get_school_subject_repository,
+    get_grade_repository,
+)
 from api.dependencies.smtp.smtp_dep import get_smtp_service
 from core.services import (
     ApplicationService,
@@ -19,6 +22,7 @@ from core.services import (
     LessonService,
     SchoolService,
     UserService,
+    GradeService,
 )
 from core.services.school_subject_service import SchoolSubjectService
 from smtp.service import SMTPService
@@ -86,3 +90,11 @@ async def get_school_subject_service(
     school_repo: Annotated["SchoolRepository", Depends(get_school_repository)],
 ) -> SchoolSubjectService:
     yield SchoolSubjectService(school_subject_repo, school_repo)
+
+
+async def get_grade_service(
+    grade_repo: Annotated["GradeRepository", Depends(get_grade_repository)],
+    lesson_repo: Annotated["LessonRepository", Depends(get_lesson_repository)],
+    user_repo: Annotated["UserRepository", Depends(get_user_repository)],
+) -> GradeService:
+    yield GradeService(grade_repo, lesson_repo, user_repo)

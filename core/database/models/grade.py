@@ -21,7 +21,9 @@ class Grade(PkIntMixin, BaseModel):
     additional_info: Mapped[str] = mapped_column(String(256), nullable=True)
 
     user: Mapped["User"] = relationship("User", foreign_keys=[user_id])
-    lesson: Mapped["Lesson"] = relationship("Lesson", foreign_keys=[lesson_id])
+    lesson: Mapped["Lesson"] = relationship(
+        "Lesson", foreign_keys=[lesson_id], lazy="joined"
+    )
 
     @validates("grade")
     def validate_grade(self, key, value):
@@ -30,6 +32,4 @@ class Grade(PkIntMixin, BaseModel):
         return value
 
     def __str__(self):
-        return (
-            f"{self.user.full_name} - {self.lesson.subject.subject_name} - {self.grade}"
-        )
+        return f"{self.user.full_name} - {self.lesson.subject_name} - {self.grade}"

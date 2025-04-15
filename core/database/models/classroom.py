@@ -39,7 +39,10 @@ class Classroom(BaseModel, PkIntMixin):
         "User", foreign_keys=[class_teacher_id]
     )
     students: Mapped[List["User"]] = relationship(
-        "User", back_populates="classroom", foreign_keys="[User.classroom_id]"
+        "User",
+        back_populates="classroom",
+        foreign_keys="[User.classroom_id]",
+        lazy="joined",
     )
     schedules: Mapped[List["Schedule"]] = relationship(
         "Schedule", back_populates="classroom", foreign_keys="[Schedule.classroom_id]"

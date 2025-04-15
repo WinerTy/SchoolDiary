@@ -18,6 +18,7 @@ from core.database.crud import (
 from core.database.crud.application import ApplicationRepository
 from core.database.crud.application import ApplicationValidator
 from core.database.crud.base import BaseValidator
+from core.database.crud.grade import GradeRepository
 from core.database.crud.school import SchoolValidator
 from core.database.crud.school_subject import SchoolSubjectRepository
 from core.database.utils import db_helper
@@ -84,3 +85,9 @@ async def get_school_subject_repository(
     session: Annotated["AsyncSession", Depends(db_helper.session_getter)],
 ):
     yield SchoolSubjectRepository(db=session)
+
+
+async def get_grade_repository(
+    session: Annotated["AsyncSession", Depends(db_helper.session_getter)],
+):
+    yield GradeRepository(db=session)

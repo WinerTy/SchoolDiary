@@ -87,10 +87,6 @@ class Schedule(BaseModel, PkIntMixin):
                     continue
 
                 if self._check_time_overlap(new_lesson, existing_lesson):
-                    print(
-                        "Отработал",
-                        self._check_time_overlap(new_lesson, existing_lesson),
-                    )
                     return False, existing_lesson
 
         return True, None

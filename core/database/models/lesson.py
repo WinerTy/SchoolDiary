@@ -46,6 +46,9 @@ class Lesson(BaseModel, PkIntMixin):
     def __str__(self):
         return self.school_subjects.subject_name
 
+    def check_user_in_class(self, user: "User") -> bool:
+        return user in self.schedule.classroom.students
+
     async def __admin_repr__(self, request: Request) -> str:
         return self.school_subjects.subject_name
 
