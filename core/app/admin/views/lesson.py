@@ -52,8 +52,8 @@ class LessonAdmin(ModelView):
         if not valid:
             raise FormValidationError(
                 {
-                    "start_time": f"Урок пересекается с другим уроком. {lesson.school_subjects.subject_name}: {lesson.id}",
-                    "end_time": f"Урок пересекается с другим уроком. {lesson.school_subjects.subject_name}: Id: {lesson.id}",
+                    "start_time": f"Урок пересекается с другим уроком. {lesson.subject_name}: {lesson.id}. Начало: {lesson.start_time}",
+                    "end_time": f"Урок пересекается с другим уроком. {lesson.subject_name}: Id: {lesson.id}. Конец: {lesson.end_time}",
                 }
             )
 

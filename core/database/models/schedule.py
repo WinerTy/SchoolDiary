@@ -41,7 +41,6 @@ class Schedule(BaseModel, PkIntMixin):
     def count_lessons(self) -> int:
         return len(self.lessons)
 
-    # TODO поддержка для типа Lesson для подключения админки
     def validate_lessons(
         self,
         new_lessons: Union["CreateLesson", List["CreateLesson"]],
@@ -63,7 +62,9 @@ class Schedule(BaseModel, PkIntMixin):
         """
         # Нормализуем входные данные в список
         lessons_to_check = (
-            [new_lessons] if isinstance(new_lessons, CreateLesson) else new_lessons
+            [new_lessons]
+            if isinstance(new_lessons, Union[CreateLesson, Lesson])
+            else new_lessons
         )
         existing = existing_lessons if existing_lessons is not None else self.lessons
 
