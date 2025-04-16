@@ -1,8 +1,8 @@
-from typing import TYPE_CHECKING, Union, List, Optional
+from typing import TYPE_CHECKING, Union, List
 
 from fastapi import HTTPException
 
-from core.database import Lesson, User, School
+from core.database import Lesson, User
 from core.database.crud import ScheduleRepository
 from core.database.crud import SchoolRepository
 from core.database.schemas.lesson import CreateLesson, ReadLesson
@@ -30,52 +30,16 @@ class LessonService(BaseService[Lesson, CreateLesson, ReadLesson, ReadLesson]):
             }
         )
 
-    async def get_school(
-        self,
-        school_id: int,
-        *,
-        validate_ownership: bool = False,
-        validate_teacher: bool = False,
-        user: Optional[User] = None,
-    ) -> School:
-        """
-        Получает школу с дополнительными проверками прав доступа
-
-        Args:
-            school_id: ID школы
-            validate_ownership: Проверять, что пользователь - директор школы
-            validate_teacher: Проверять, что пользователь - учитель школы
-            user: Пользователь для проверки прав
-
-        Returns:
-            School: Объект школы
-
-        Raises:
-            HTTPException: 404 если школа не найдена
-            PermissionError: Если проверка прав не пройдена
-        """
-        school_repo: SchoolRepository = self.get_repo("school")
-        school = await school_repo.get_school_or_404(school_id)
-
-        if validate_ownership or validate_teacher:
-            if not user:
-                raise ValueError("User is required for permission validation")
-
-            if validate_ownership:
-                school_repo.validator.validate_ownership(school, user)
-
-            if validate_teacher:
-                school_repo.validator.validate_teacher(school, user)
-
-        return school
-
     async def create_lessons(
         self,
         school_id: int,
         create_data: Union[CreateLesson, List[CreateLesson]],
         user: User,
     ):
-        await self.get_school(school_id, validate_ownership=True, user=user)
+        school_repo: SchoolRepository = self.get_repo("school")
+        school = await school_repo.get_school(
+            school_id, validate_ownership=True, user=user
+        )
 
         lesson_repo: LessonRepository = self.get_repo("lesson")
         if isinstance(create_data, list):
@@ -129,9 +93,24 @@ class LessonService(BaseService[Lesson, CreateLesson, ReadLesson, ReadLesson]):
             )
 
         is_valid, lesson = schedule.validate_lessons(new_lessons=lesson_list)
-        print("is_valid: ", is_valid)
         if not is_valid:
             raise HTTPException(
                 status_code=400,
                 detail=f"Conflict with lesson {lesson.school_subject_id} at {lesson.end_time}",
             )
+
+    async def get_lesson(self, lesson_id: int) -> Lesson:
+        """
+        Получение урока по id.
+
+        Args:
+            lesson_id: id урока
+
+        Returns:
+            Урок
+
+        Raises:
+            HTTPException: 404 Если урок не найден
+        """
+        lesson_repo: LessonRepository = self.get_repo("lesson")
+        return await lesson_repo.get_by_id(lesson_id)

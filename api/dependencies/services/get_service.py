@@ -96,5 +96,6 @@ async def get_grade_service(
     grade_repo: Annotated["GradeRepository", Depends(get_grade_repository)],
     lesson_repo: Annotated["LessonRepository", Depends(get_lesson_repository)],
     user_repo: Annotated["UserRepository", Depends(get_user_repository)],
+    lesson_service: Annotated["LessonService", Depends(get_lesson_service)],
 ) -> GradeService:
-    yield GradeService(grade_repo, lesson_repo, user_repo)
+    yield GradeService(grade_repo, lesson_repo, user_repo, lesson_service)

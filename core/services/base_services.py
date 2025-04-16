@@ -5,14 +5,24 @@ from core.database.crud.base.repository import BaseRepository
 from core.types import Model, CreateSchema, ReadSchema, UpdateSchema
 
 RepositoryType = TypeVar("RepositoryType", bound=BaseRepository[Any, Any, Any, Any])
+ServiceType = TypeVar("ServiceType", bound="BaseService[Any, Any, Any, Any]")
 
 
 class BaseService(Generic[Model, CreateSchema, ReadSchema, UpdateSchema], ABC):
     def __init__(
         self,
         repositories: Dict[str, RepositoryType],
+        services: Optional[Dict[str, ServiceType]] = None,
     ):
         self.repositories = repositories
+        self.services = services
+
+    def get_service(self, service_name: str) -> ServiceType:
+        """Get service by name."""
+        service = self.services.get(service_name)
+        if not service:
+            raise ValueError(f"Service {service_name} not found")
+        return service
 
     def get_repo(self, repo_name: str = None) -> RepositoryType:
         if repo_name is None:

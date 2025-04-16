@@ -36,7 +36,7 @@ class Lesson(BaseModel, PkIntMixin):
     )
 
     teacher: Mapped["User"] = relationship(
-        "User", back_populates="lessons", foreign_keys=[teacher_id]
+        "User", back_populates="lessons", foreign_keys=[teacher_id], lazy="joined"
     )
     schedule: Mapped["Schedule"] = relationship(
         "Schedule", back_populates="lessons", lazy="joined"

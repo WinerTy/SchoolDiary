@@ -2,6 +2,8 @@ from typing import Optional, Annotated
 
 from pydantic import BaseModel, Field
 
+from core.database.crud.user import UserRead
+
 
 class GradeBase(BaseModel):
     additional_info: Annotated[Optional[str], Field(max_length=256)] = None
@@ -20,4 +22,6 @@ class GradeCreate(GradeBase):
 
 
 class GradeRead(GradeBase):
-    pass
+    id: int
+    grade: int
+    user: UserRead

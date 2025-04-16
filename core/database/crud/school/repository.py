@@ -1,8 +1,8 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from fastapi import HTTPException
 
-from core.database import School
+from core.database import School, User
 from core.database.crud.base.repository import BaseRepository
 from core.database.schemas.school import CreateSchool, ReadSchool, UpdateSchool
 from .validator import SchoolValidator
@@ -37,4 +37,43 @@ class SchoolRepository(BaseRepository[School, CreateSchool, ReadSchool, UpdateSc
         school = await self.get_by_id(school_id)
         if not school:
             raise HTTPException(status_code=404, detail="School not found")
+        return school
+
+    async def get_school(
+        self,
+        school_id: int,
+        *,
+        validate_ownership: bool = False,
+        validate_teacher: bool = False,
+        user: Optional[User] = None,
+    ) -> School:
+        """
+        Получает школу с дополнительными проверками прав доступа
+
+        Args:
+            school_id: ID школы
+            validate_ownership: Проверять, что пользователь - директор школы
+            validate_teacher: Проверять, что пользователь - учитель школы
+            user: Пользователь для проверки прав
+
+        Returns:
+            School: Объект школы
+
+        Raises:
+            HTTPException: 404 если школа не найдена
+            HTTPException: 403 Если проверка прав не пройдена
+        """
+
+        school = await self.get_by_id(school_id)
+
+        if validate_ownership or validate_teacher:
+            if not user:
+                raise ValueError("User is required for permission validation")
+
+            if validate_ownership:
+                self.validator.validate_ownership(school, user)
+
+            if validate_teacher:
+                self.validator.validate_teacher(school, user)
+
         return school
