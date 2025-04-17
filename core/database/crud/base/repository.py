@@ -142,9 +142,7 @@ class BaseRepository(Generic[Model, CreateSchema, ReadSchema, UpdateSchema]):
 
     async def delete(self, item_id: Union[int, str]) -> None:
         try:
-            stmt = delete(self.model).where(
-                getattr(self.model, self.pk_field) == item_id
-            )
+            stmt = delete(self.get_by_id(item_id))
             await self.db.execute(stmt)
             await self.db.commit()
         except Exception as e:

@@ -48,7 +48,9 @@ class User(BaseModel, PkIntMixin, SQLAlchemyBaseUserTable[int]):
 
     lessons: Mapped[List["Lesson"]] = relationship("Lesson", back_populates="teacher")
 
-    grades: Mapped[List["Grade"]] = relationship("Grade", back_populates="user")
+    grades: Mapped[List["Grade"]] = relationship(
+        "Grade", back_populates="user", lazy="joined"
+    )
 
     @property
     def full_name(self):

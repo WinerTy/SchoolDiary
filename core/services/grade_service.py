@@ -79,3 +79,15 @@ class GradeService(BaseService[Grade, GradeCreate, GradeRead, GradeCreate]):
         grade_repo: GradeRepository = self.get_repo("grade")
         grade = await grade_repo.create(grade_data)
         return grade
+
+    async def update_grade(self, grade_id: int, grade_data: GradeCreate) -> Grade:
+        """
+        Метод для обновления оценки.
+        """
+        grade_repo: GradeRepository = self.get_repo("grade")
+        return await grade_repo.update(grade_id, grade_data)
+
+    async def delete_grade(self, grade_id: int) -> None:
+        grade_repo: GradeRepository = self.get_repo("grade")
+        await grade_repo.delete(grade_id)
+        return

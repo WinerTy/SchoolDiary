@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Annotated
+from typing import TYPE_CHECKING, Annotated, List
 
 from fastapi import APIRouter, Depends, Response, status
 
@@ -10,6 +10,7 @@ from api.v1.auth.fastapi_users import (
     current_active_teacher_or_admin_in_school,
     current_active_user,
 )
+from core.database.crud.grade.schemas import GradeRead
 from core.database.crud.invitation.schemas import (
     CreateInviteResponse,
     ReadInvite,
@@ -80,3 +81,10 @@ async def update_me(
     update_data: UserUpdateRequest,
 ):
     return await service.update_user(user_id=user.id, update_data=update_data)
+
+
+@router.get("/grade/", response_model=List[GradeRead])
+async def get_my_grades(
+    user: Annotated["User", Depends(current_active_user)],
+):
+    return user.grades

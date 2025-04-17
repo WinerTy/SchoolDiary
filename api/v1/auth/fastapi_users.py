@@ -1,3 +1,5 @@
+from typing import Annotated
+
 from fastapi import Depends, HTTPException
 from fastapi_users import FastAPIUsers
 from starlette import status
@@ -5,8 +7,10 @@ from starlette import status
 from api.dependencies.auth import authentication_backend
 from api.dependencies.auth import get_user_manager
 from api.dependencies.repository import get_school_repository
+from api.dependencies.repository.get_repository import get_grade_repository
 from core.database import User
 from core.database.crud import SchoolRepository
+from core.database.crud.grade import GradeRepository
 from core.database.models.choices import ChoicesRole
 
 fastapi_users = FastAPIUsers[User, int](
@@ -18,9 +22,11 @@ fastapi_users = FastAPIUsers[User, int](
 current_active_user = fastapi_users.current_user(active=True)
 current_active_superuser = fastapi_users.current_user(active=True, superuser=True)
 
+current_user = Annotated[User, Depends(current_active_user)]
+
 
 async def current_active_student_user(
-    user: User = Depends(current_active_user),
+    user: current_user,
 ) -> User:
     if user.role != ChoicesRole.platform_admin:
         raise HTTPException(
@@ -74,4 +80,18 @@ async def current_active_teacher_or_admin_in_school(
             detail="User is not associated with this school",
         )
 
+    return user
+
+
+async def current_teacher_for_lesson(
+    user: current_user,
+    grade_id: int,
+    grade_repo: Annotated["GradeRepository", Depends(get_grade_repository)],
+) -> User:
+    grade = await grade_repo.get_by_id(grade_id)
+    if grade.lesson.teacher != user:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="We are not teacher for this lesson",
+        )
     return user
