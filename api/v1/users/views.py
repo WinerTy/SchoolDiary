@@ -1,6 +1,6 @@
-from typing import TYPE_CHECKING, Annotated, List
+from typing import TYPE_CHECKING, Annotated, List, Optional
 
-from fastapi import APIRouter, Depends, Response, status
+from fastapi import APIRouter, Depends, Response, status, Query
 
 from api.dependencies.services.get_service import (
     get_invitation_service,
@@ -86,5 +86,8 @@ async def update_me(
 @router.get("/grade/", response_model=List[GradeRead])
 async def get_my_grades(
     user: Annotated["User", Depends(current_active_user)],
+    service: Annotated["UserService", Depends(get_user_service)],
+    subjects: Optional[List[str]] = Query(None, description="Filter by subject names"),
 ):
-    return user.grades
+    result = await service.get_grade_with_filter(user, subjects)
+    return result

@@ -44,20 +44,20 @@ class Lesson(BaseModel, PkIntMixin):
     grades: Mapped[List["Grade"]] = relationship("Grade", back_populates="lesson")
 
     def __str__(self):
-        return self.school_subjects.subject_name
+        return self.subject_name
 
     def check_user_in_class(self, user: "User") -> bool:
         return user in self.schedule.classroom.students
 
     async def __admin_repr__(self, request: Request) -> str:
-        return self.school_subjects.subject_name
+        return self.subject_name
 
     async def __admin_select2_repr__(self, request: Request) -> str:
         template = Template(
             """<span>{{ subject_name }}</span>""",
             autoescape=True,
         )
-        return template.render(subject_name=self.school_subjects.subject_name)
+        return template.render(subject_name=self.subject_name)
 
     @property
     def subject_name(self) -> str:
